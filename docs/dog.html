@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机器狗算法扫盲 · GOW 战队</title>
+<style>
+:root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
+@media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.75;font-size:16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:var(--bg);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.brand{font-weight:700;color:var(--fg);letter-spacing:.5px}
+.back{font-size:14px;color:var(--muted)}
+.wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px}
+.doc h1{font-size:28px;margin:8px 0 24px;line-height:1.35}
+.doc h2{font-size:22px;margin:40px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc h3{font-size:18px;margin:28px 0 10px}
+.doc p{margin:14px 0}
+.doc img{max-width:100%;height:auto;border-radius:8px;display:block;margin:18px auto;border:1px solid var(--line)}
+.doc blockquote{margin:18px 0;padding:12px 16px;background:var(--card);border-left:3px solid var(--accent);border-radius:6px;color:var(--fg)}
+.doc blockquote p{margin:6px 0}
+.doc code{background:var(--card);padding:2px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.doc pre{background:var(--card);padding:16px;border-radius:8px;overflow:auto;border:1px solid var(--line)}
+.doc pre code{background:none;padding:0;font-size:.9em}
+.doc table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+.doc th{background:var(--card);font-weight:600;white-space:nowrap}
+.doc ul,.doc ol{padding-left:24px}
+.doc li{margin:6px 0}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:0 0 28px;font-size:14px}
+.toc ul{margin:0;padding-left:18px}
+.toc>ul{padding-left:0;list-style:none}
+.toc li{margin:4px 0}
+.foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">GOW 战队</a>
+  <a class="back" href="../index.html">← 返回主页</a>
+</header>
+<main class="wrap">
+  <article class="doc">
+    <h1 id="_1">机器狗算法扫盲</h1>
+<div class="toc">
+<ul>
+<li><a href="#01">01.电机</a></li>
+<li><a href="#02">02.减速器</a></li>
+<li><a href="#03">03.编码器（测量位置/速度）</a></li>
+<li><a href="#04">04.单圈绝对编码器</a></li>
+<li><a href="#05">05.双圈绝对编码器</a></li>
+<li><a href="#06">06.通信协议</a></li>
+<li><a href="#07">07.电机驱动器</a></li>
+<li><a href="#11fk">11.运动学正解FK</a></li>
+<li><a href="#12ik">12.运动学逆解IK</a></li>
+<li><a href="#13">13.数学公式</a></li>
+<li><a href="#14">14.绝对位置和相对位置</a></li>
+<li><a href="#21">21.足端需要达到的目标点</a></li>
+<li><a href="#31">31.雅可比矩阵是什么？</a></li>
+<li><a href="#32">32.为什么需要雅可比？</a></li>
+<li><a href="#33">33.雅可比矩阵的原理</a></li>
+<li><a href="#34">34.奇异点</a></li>
+<li><a href="#41">41.贝赛尔曲线</a></li>
+<li><a href="#42">42.五阶多项式表示</a></li>
+<li><a href="#43">43.摆线</a></li>
+<li><a href="#44">44.步态规划</a></li>
+<li><a href="#45raibert">45.Raibert启发式落脚点</a></li>
+<li><a href="#51imu">51.IMU</a></li>
+<li><a href="#52">52.空间状态模型</a></li>
+<li><a href="#53">53.概率论</a></li>
+<li><a href="#54">54.协方差矩阵</a></li>
+<li><a href="#55">55.卡尔曼滤波</a></li>
+<li><a href="#56">56.最小二乘估计</a></li>
+<li><a href="#61">61.它解决什么问题</a></li>
+<li><a href="#62">62.姿态的三种表示</a></li>
+<li><a href="#63">63.齐次变换：位置和姿态写在一起</a></li>
+<li><a href="#64">64.旋转怎么作用在速度和力上</a></li>
+<li><a href="#65">65.一句话总结</a></li>
+<li><a href="#71vmc">71.VMC</a></li>
+<li><a href="#81">81.为什么需要二次规划？</a></li>
+<li><a href="#82">82.具体公式</a></li>
+<li><a href="#83">83.凸优化和非凸优化</a></li>
+<li><a href="#91lqr">91.为什么需要LQR</a></li>
+<li><a href="#92">92.具体公式</a></li>
+<li><a href="#101mpc">101.什么是MPC</a></li>
+<li><a href="#102mpc">102.为什么需要MPC</a></li>
+<li><a href="#103mpc">103.MPC的具体公式</a></li>
+<li><a href="#104">104.代价函数</a></li>
+<li><a href="#105">105.代价函数计算</a></li>
+<li><a href="#111wbc">111.为什么需要WBC</a></li>
+<li><a href="#112">112.具体公式</a></li>
+<li><a href="#113">113.实际要点</a></li>
+</ul>
+</div>
+<blockquote>
+<p>🥖  声明：在比赛期间注意生命安全！！！若有事故概不负责，本文档只做机器狗最重要的知识，详情看Lain的文档，飞书有类似文档订阅功能，文档持续更新，开启此功能后，更新时会有提醒！！！</p>
+</blockquote>
+<h1 id="00">00.什么是关节电机</h1>
+<h2 id="01">01.电机</h2>
+<p>内部使用FOC算法进行驱动，FOC算法由于其高精度高稳定性，可以直接快速的驱动而成为行业主流</p>
+<h2 id="02"><strong>02.减速器</strong></h2>
+<p>降低转速、放大输出力矩 ，原理就是两个齿轮转速降低多少倍，理想情况下力矩就放大多少倍</p>
+<h2 id="03"><strong>03.编码器</strong>（测量位置/速度）</h2>
+<h2 id="04"><strong>04.单圈绝对编码器</strong></h2>
+<p>只能测量当前一圈内的绝对角度（0°～360°）</p>
+<h2 id="05"><strong>05.双圈绝对编码器</strong></h2>
+<p>不仅能测量当前角度，还能记录跨越一整圈后的圈数，从而获得多圈绝对位置</p>
+<h2 id="06"><strong>06.通信协议</strong></h2>
+<p><strong>RS-485</strong></p>
+<p>一种差分串行通信物理层标准，支持多节点、抗干扰能力强，常用于电机、传感器等设备通信<br />
+<strong>CAN</strong></p>
+<p>一种具有多主机、消息优先级和错误检测/自动重传机制的总线通信协议，可靠性高，广泛用于机器人和汽车控制</p>
+<h2 id="07"><strong>07.电机驱动器</strong></h2>
+<p>控制电机电流、转矩、速度，还集成温度、电流、力矩估计等功能</p>
+<p>以宇树电机M8010为例子，具体看文档https://support.unitree.com/home/zh/Motor_SDK_Dev_Guide/FAQ</p>
+<h1 id="10">10.运动学正逆解</h1>
+<h2 id="11fk">11.运动学正解FK</h2>
+<p>已知各关节角度，求足端在机体坐标系下的位置和姿态</p>
+<h2 id="12ik">12.运动学逆解IK</h2>
+<p>已知足端目标位置，反求对应的各关节角度，在机器狗中的原理很简单，以并联狗（8自由度）为例，从机体到足端构建一个平行四边形，你会发现当长和宽（对应大腿和小腿的长度）确定，平行四边形两个夹角（对应大腿和小腿对应的角度）确定，可以确定一个唯一的平行四边形（对应机体点的对角便是足端）。在此基础上再加上髋侧摆关节（12自由度），便可以确定在一个三维坐标系下的运动学解算</p>
+<h2 id="13">13.数学公式</h2>
+<p>$$x=L_1\cos(q_1)+L_2\cos(q_1+q_2)$$</p>
+<p>$$z=L_1\sin(q_1)+L_2\sin(q_1+q_2)$$</p>
+<p>三轴的很简单，但是如果放在多轴机械臂上就不一样了https://zhuanlan.zhihu.com/p/2013932577543718346</p>
+<h2 id="14">14.绝对位置和相对位置</h2>
+<p>电机有<strong><em>编码器</em></strong>，可以输出当前转动的角度，大部分编码器都是<strong><em>绝对编码</em></strong>，所以一般情况下代码输出的是<strong><em>绝对位置</em></strong>，有人会有疑问，为什么我的代码不能直接输出相对位置呢？</p>
+<p>举一个例子实际上就知道了，宇树的电机<strong><em>减速比</em></strong>是6.33，内圈转动6.33圈外部才会转动一圈。假如你的电机停下来的时候，编码器显示30度，软件层面圈数显示2圈，意味着内圈转了720+30=750，外圈转了750/6.33，下次上电的时候，编码器由于是<strong><em>单圈编码</em></strong>，上次软件记录的圈数消失，编码器只会显示30度......如果你代码输出的是相对位置，下次上电后编码器仍然只显示30度，那么少掉的720度（2圈）从哪里补呢？</p>
+<p>所以这其实是因为电机的编码器编码的是<strong><em>单圈</em></strong>，同时输出的是内圈转子的角度而不是外圈被减速之后的角度，这就是双编码电机的优势：可以直接输出内部电机轴和外部关节轴双角度</p>
+<h1 id="20">20.电机的位置控制</h1>
+<h2 id="21">21.足端需要达到的目标点</h2>
+<p>使用运动学逆解（IK）由足端目标点计算出对应的关节角度 q1、q2</p>
+<p>在位置模式下，电机的输出轴将会转动到一个给定的角度。例如，如果我们希望电机输出端转动到 6.28 弧度的角度位置，可以将控制参数如下设置：</p>
+<pre><code class="language-C++">cmd.q    = 6.28*queryGearRatio(MotorType.GO_M8010_6) //queryGearRatio是电机的减速比，等于6.33
+d.dq   = 0.0
+cmd.kp   = 0.01 //将 tau 与 dq 设置为0，即可成为针对 q 的 PD 控制，其中 kp 为比例系数，kd 为微分系数
+cmd.kd   = 0.01
+cmd.tau  = 0.0 
+</code></pre>
+<blockquote>
+<p>🥖  注意！！！宇树的M8010是单圈绝对编码器，重新上电后不管电机输出当前的绝对位置，在机械狗上只需要向电机发送空的请求便可以返回当前的位置，同时得知机械的零位角度，最后软件输出绝对位置即可</p>
+<p>✍️  再注意！！！，当你尝试的时候，要么千万不要随便设置电机参数，一定是三思而后行，最简单的就是先把kp调低，电机参数0.01的差距就完全不一样！！！关节电机的力量巨大，操作不好会死（字面意思）！！！</p>
+</blockquote>
+<h1 id="30">30.雅可比矩阵</h1>
+<h2 id="31">31.雅可比矩阵是什么？</h2>
+<p>雅可比矩阵本质上描述的是：<strong>关节空间的微小变化，会引起末端执行器位姿多大的变化</strong></p>
+<h2 id="32">32.为什么需要雅可比？</h2>
+<p>上面我们使用<strong><em>正逆解</em></strong>来计算位置，但是速度呢？速度该怎么计算呢？这就是雅可比矩阵需要的</p>
+<p>雅可比矩阵：https://zhuanlan.zhihu.com/p/2062473077598970250</p>
+<p>虚功定理： https://www.bilibili.com/video/BV1AKtWeNEnE/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<h2 id="33">33.雅可比矩阵的原理</h2>
+<p>通过求足端位置对各个关节角度的偏导，得到雅可比矩阵</p>
+<p>首先得知各关节角度：$q=\begin{bmatrix}q_1\q_2\\vdots\q_n\end{bmatrix}$</p>
+<p>末端位置用角度来表示：$x=f(q)$$x=\begin{bmatrix}x_1(q_1,\cdots,q_n)\x_2(q_1,\cdots,q_n)\\vdots\x_m(q_1,\cdots,q_n)\end{bmatrix}$    用二轴举例$x=L_1\cos q_1+L_2\cos(q_1+q_2)$</p>
+<p>对时间求导$\dot{x}_i=\frac{\partial x_i}{\partial q_1}\dot{q}_1+\frac{\partial x_i}{\partial q_2}\dot{q}_2+\cdots+\frac{\partial x_i}{\partial q_n}\dot{q}_n$    得到最后速度的公式$\dot{x}=\begin{bmatrix}\frac{\partial x_1}{\partial q_1} &amp;\frac{\partial x_1}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_1}{\partial q_n}\\frac{\partial x_2}{\partial q_1} &amp;\frac{\partial x_2}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_2}{\partial q_n}\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\frac{\partial x_m}{\partial q_1} &amp;\frac{\partial x_m}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_m}{\partial q_n}\end{bmatrix}\dot{q}$</p>
+<p>最终通过公式$J(q)=\frac{\partial x}{\partial q}$ 得到：</p>
+<p><img alt="图片展示的是雅可比矩阵与速度关系的公式。公式为$\dot{x}=J\dot{q}$，其中$\dot{x}$表示速度，$J$是雅可比矩阵，$\dot{q}$表示关节速度。该公式是雅可比矩阵原理中求解速度的关键表达式，与上文对时间求导得到速度公式相呼应，是通过雅可比矩阵$J(q)=\frac{\partial x}{\partial q}$求得速度$\dot{x}$的最终结果，体现了雅可比矩阵在机器人学中求解速度问题的应用。" src="assets/AHRMbdiJNoS9XyxJOXec0DQbnCe.png" /></p>
+<h2 id="34">34.奇异点</h2>
+<p>奇异点不是“到不了的点”（那是工作空间边界），而是雅可比矩阵降秩的位形，比如腿完全伸直或完全折叠：位置能到达，但在该方向上速度映射失效、关节速度会趋于无穷。而 40cm 手臂够不到 50cm 属于工作空间边界，具体自己查</p>
+<h1 id="40">40.步态和落脚点规划</h1>
+<h2 id="41">41.贝赛尔曲线</h2>
+<p>https://www.bilibili.com/video/BV1YQCvYTEmT/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<p>有两个点分别是：$P_0,\quad P_1$然后定义参数：$t\in[0,1]$最后贝塞尔曲线的表达为：</p>
+<p>$P(t)=(1-t)P_0+tP_1$这个是一阶贝塞尔，还可以高阶，理论上便可以表达任何的曲线</p>
+<h2 id="42">42.五阶多项式表示</h2>
+<p>起点位置，终点位置，起点速度，终点速度， 起点加速度，终点加速度，六个约束需要五阶（六个系数的）多项式</p>
+<p>$$p(t)=a_0+a_1t+a_2t^2+a_3t^3+a_4t^4+a_5t^5$$</p>
+<p>$$\dot{p}(t)=a_1+2a_2t+3a_3t^2+4a_4t^3+5a_5t^4$$</p>
+<p>$$\ddot{p}(t)=2a_2+6a_3t+12a_4t^2+20a_5t^3$$</p>
+<p>规定时间T，确定终点的位置和速度</p>
+<p>最终解方程，可以确定任何时间（0&lt;=t&lt;=T）时候的位置和速度</p>
+<h2 id="43">43.摆线</h2>
+<p>实际上任何比较平滑的曲线都可以直接当轨迹点，最典型的就是sin和cos</p>
+<p>不过如果你学过opencv应该没有忘记傅里叶变换，使用sin和cos表示任何的曲线</p>
+<p>诸如此类的还有很多，我写高抬腿的时候直接就用到了抛物线，实际上这个也是一种贝塞尔</p>
+<h2 id="44">44.步态规划</h2>
+<p>https://www.bilibili.com/video/BV1YD4y1D7k6/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<p>$c_{LF}(t)$：左前腿 LF 当前是否接触地面</p>
+<p>$c_{RF}(t)$：右前腿 RF 当前是否接触地面</p>
+<p>$c_{LH}(t)$：左后腿 LH 当前是否接触地面</p>
+<p>$c_{RH}(t)$：右后腿 RH 当前是否接触地面</p>
+<p>一种是比较简单的，直接对角线的腿C一致，例如左前和右后同时保持摆动相，而右前和左后保持支撑相，在此基础上可以增加爬行步态本质是改变<strong><em>相位</em></strong>，在这里不过多介绍，可以去搜索常见的步态</p>
+<h2 id="45raibert">45.Raibert启发式落脚点</h2>
+<p>https://github.com/Michael-Jetson/Robotics_Tutorial/blob/main/05_%E8%BF%90%E5%8A%A8%E6%8E%A7%E5%88%B6/10_%E8%B6%B3%E5%BC%8F/140_%E8%90%BD%E8%84%9A%E7%82%B9%E8%A7%84%E5%88%92%E7%BB%8F%E5%85%B8%E6%96%B9%E6%B3%95.md</p>
+<p>当你使用贝塞尔计算摆动相足端的轨迹的时候，需要起点和终点，起点是固定的每次起摆的时候足端接触位置，但是终点并不是固定的，当速度快的时候终点需要向前，减速的时候需要向后，是需要动态计算的，所以有启发式落脚点这个计算方法</p>
+<p>中间公式推导省略，详情看上面的文档，下面给出只发生直行且当你维持现在的速度和位置不变的落脚点的公式,</p>
+<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2}  v_{base}$$</p>
+<p>这里：</p>
+<ul>
+<li>$x_{foot}^{target}$：预测的足端落点,也就是贝塞尔的终点</li>
+<li>$p_{hip}$：髋关节在地面的投影，是在一个xy平面的点，z为0</li>
+<li>$T_{stance}$：支撑相的时间</li>
+<li>$v_{base}$：机器人当前速度,也就是你通过估计器等方法获得的实际机体速度</li>
+</ul>
+<p>下面是要向前移动的公式</p>
+<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref})$$</p>
+<p>当然实际运动肯定不可能只发生直线，你还需要转弯，但是转弯肯定会有身体倾斜，那么就需要一个航向修正项来补偿</p>
+<p>在三维中，转弯造成的髋关节偏移为：</p>
+<p>$$p_{foot}^{yaw}=\frac {T_s}{2}ω_z×(p_{hip}−p_{base})$$</p>
+<p>注意这个是叉乘，不是简单的乘法</p>
+<p>因此，完整的启发式落脚点为：</p>
+<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref}) + \frac {T_s}{2}\omega_z\times(p_{hip}-p_{base})$$</p>
+<ul>
+<li>$w_z $: 绕z轴旋转的角速度</li>
+</ul>
+<blockquote>
+<p>💡  下面说一下注意事项：
+1. 在实际写代码过程中应注意各个参数的坐标系，如果是世界系最好都是世界系
+2. 要注意$p_{hip}$虽然是xy平面的点，但他也是三维的向量是Vector3d，只是z方向分量为0
+3. 上面公式带入可以直接用，不过我推荐最好先只加入直行，转动等可以稳定直行之后再加入，否则会有很多问题混在一起排查不出来</p>
+</blockquote>
+<h1 id="50">50.估计器</h1>
+<p>从刚才的落脚点规划以及后面要学习的东西来看，求出狗的<strong><em>状态</em></strong>时很重要的</p>
+<p>以后一说狗的<strong><em>状态</em></strong>其实就自动想到：<strong><em>位置速度加速度，姿态，角速度</em></strong></p>
+<h2 id="51imu">51.IMU</h2>
+<p><strong><em>IMU</em></strong>的重要性我就不说了，它由加速度计和陀螺仪组成（常带磁力计），分别测加速度和角速度；加速度计受温度影响很大，大疆的imu内部有加热的电阻，保持一定的高温</p>
+<h2 id="52">52.空间状态模型</h2>
+<p>就记住一句话就行，系统的下一阶段的变换与系统当前的状态和系统当前的输入有关（系统是线性的）</p>
+<p>再给我记住一个公式：</p>
+<p><img alt="图片展示了两个数学公式。上方公式为状态方程，表示系统状态x随时间的变化率为Ax与Bu的线性组合；下方公式为输出方程，表示系统输出y为Cx与Du的线性组合。这些公式是空间状态模型的基础，与上文提到的系统下一阶段变换与当前状态、输入有关的内容相呼应，是后续学习机器狗算法中空间状态模型的数学表达。" src="assets/SNiCbypFdoSGTJxCscmcu8UtnNg.png" /></p>
+<p>具体的空间状态模型很复杂，主编能力有限不多讲解，在此基础上，加入dt将其变为离散状态空间模型</p>
+<h2 id="53">53.概率论</h2>
+<p>得到机器狗的实际状态实在是太难，行业内用了太多东西想要求出这些，IMU雷达相机激光等等，原因就是硬件的精度以及各种的偏差加起来，噪声让人难绷</p>
+<p>这里只介绍协方差矩阵和卡尔曼滤波</p>
+<h2 id="54">54.协方差矩阵</h2>
+<p>两个随机变量 X、Y 的协方差定义为：</p>
+<p>$$Cov(X,Y) = E[(X − E[X])·(Y − E[Y])]$$</p>
+<p>• $Cov(X,Y) &gt; 0 $ ：两个变量倾向于一起增大/减小</p>
+<p>• $Cov(X,Y) &lt; 0$：一个增大时，另一个倾向于减小</p>
+<p>• $Cov(X,Y) ≈ 0 $：两者没有明显的线性相关</p>
+<p>如果状态有很多维：</p>
+<p>$$x = [ x₁, x₂, …, xₙ ]ᵀ$$</p>
+<p>那么就把所有变量之间的协方差放进一个矩阵：</p>
+<p>$$P = E[(x − μ)(x − μ)ᵀ]$$</p>
+<p>展开就是：</p>
+<p>$$P=\begin{bmatrix}Var(x_1) &amp; Cov(x_1,x_2) &amp; \cdots &amp; Cov(x_1,x_n)\Cov(x_2,x_1) &amp; Var(x_2) &amp; \cdots &amp; Cov(x_2,x_n)\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\Cov(x_n,x_1) &amp; Cov(x_n,x_2) &amp; \cdots &amp; Var(x_n)\end{bmatrix}$$</p>
+<p>这里有两个重要规律：对角线表示：每一个状态变量自己有多不确定，非对角线：表示：两个状态变量之间的不确定性是否相关</p>
+<h2 id="55">55.卡尔曼滤波</h2>
+<p>https://www.bilibili.com/video/BV1ez4y1X7eR/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<p>重点！！！，最基本的状态融合，这个我就不多说了，我写了你们也看不懂，核心思想就是根据当前的状态，通过<strong><em>协方差</em></strong>和<strong><em>高斯分布</em></strong>预测下一时间的状态，这里直接用到了刚才说的空间状态方程，拿你们接触过的车来举例，编码器和IMU到底该相信谁，编码器是长期稳定，但是相对低速，IMU是高频但是长期会有积分误差，通过协方差计算两个值之间的变换关系，然后通过卡尔曼滤波分别给予他俩置信度，对未来进行预测，之后再测量实际状态进行更新</p>
+<h2 id="56">56.最小二乘估计</h2>
+<h1 id="60">60.刚体运动学</h1>
+<h2 id="61">61.它解决什么问题</h2>
+<p>前面 10 的<strong><em>运动学正逆解</em></strong>只算<strong><em>一条腿</em></strong>；刚体运动学是把机身也当成一个刚体：机身有位置和姿态，腿挂在机身上。落脚点、IMU 读数、期望姿态，最后都要换到同一个坐标系里才能算，所以这一节是后面估计器、MPC、WBC 的共同语言</p>
+<h2 id="62">62.姿态的三种表示</h2>
+<p><strong>欧拉角</strong>（roll/pitch/yaw）：最直观，人能读，但有<strong><em>万向锁</em></strong>，大角度时会退化</p>
+<p><strong>旋转矩阵 R</strong>：3×3，正交且 det=1（属于 SO(3)），可以直接乘向量做坐标变换，缺点是 9 个数表达 3 个自由度，不处理会漂移</p>
+<p><strong>四元数 q</strong> = w + xi + yj + zk：四个数、无奇异、插值平滑，仿真和实机内部基本都用它，缺点是不直观</p>
+<p>三者可以互相转换：一般用旋转矩阵算、用欧拉角看、用四元数传</p>
+<h2 id="63">63.齐次变换：位置和姿态写在一起</h2>
+<p>$$T=\begin{bmatrix}R &amp; p\ 0 &amp; 1\end{bmatrix}\in SE(3)$$</p>
+<p>复合就是连乘，顺序从外往里写：</p>
+<p>$$T_{w}^{f}=T_{w}^{b}T_{b}^{h}T_{h}^{f}$$</p>
+<p>也就是世界系→机身系→髋系→足端系，这就是 12 节正解在三维里的写法。反变换不用求逆矩阵，因为 R 正交：</p>
+<p>$$T^{-1}=\begin{bmatrix}R^{T} &amp; -R^{T}p\ 0 &amp; 1\end{bmatrix}$$</p>
+<h2 id="64">64.旋转怎么作用在速度和力上</h2>
+<p>同一个向量在两个坐标系下的表示：$v_{w}=R_{wb}v_{b}$</p>
+<p>姿态变化率与角速度的关系：$\dot{R}=R[\omega]<em>{\times}$，其中 $[\omega]</em>{\times}$ 就是 103 节里那个反对称矩阵，这也是 IMU 的角速度能积分出姿态的根据</p>
+<p>力和力矩本身也是向量，换系同样要旋转。注意<strong><em>力可以平移，力矩不行</em></strong>，力矩要带力臂：$\tau=r\times F$</p>
+<h2 id="65">65.一句话总结</h2>
+<p>刚体运动学 = 每条腿的运动学 + 机身一个 6 维位姿。难的不是公式，是<strong><em>坐标系约定</em></strong>：谁相对谁、乘法顺序不能反、旋转不能交换</p>
+<blockquote>
+<p>💡  写代码前先画一张坐标系图（世界系/机身系/髋系/足端系），把每个 T 的下标方向标清楚，能省掉一大半“方向反了”的 bug</p>
+<p>🥇  以上也是机械臂应该必会的知识点，如果你做完一个机械臂发现有的还不会，那你应该多注意一下</p>
+</blockquote>
+<h1 id="70">70.平衡器</h1>
+<h2 id="71vmc">71.VMC</h2>
+<p>你们肯定想过为什么需要足式机器人，相比起轮子，履带以及其他结构，他的优势就是<strong><em>泛化性</em></strong>高，在任何的地形都可以使用，倘若我做一个越野小车，我最终应该是通过机械的悬挂来减震等，但是如果我们直接操控电机来减震呢？这就是VMC的核心思想，通过虚拟力来保持平衡</p>
+<p>https://www.zhihu.com/question/4361891019/answer/93146537862</p>
+<p>https://www.bilibili.com/video/BV1TWHrzeEbj/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<p>将整条腿抽象成虚拟弹簧和虚拟阻尼器，其实你光看这个你会发现和<strong><em>PID</em></strong>没啥区别，本质上一个是作用在底层电机上，另外一个是作用在腿上。其实我们在<strong><em>Raibert启发式落脚点</em></strong>也有相关的K，实际上只要是含有参数的，都可以加PID,万物皆可PID，包括后面sim2real的时候，就可以将关键参数先通过pid改小，防止炸机</p>
+<p>回到正事，计算出虚拟力之后，我们引出电机除去<strong><em>位置控制，速度控制</em></strong>之后的第三种控制方式<strong><em>力矩控制</em></strong>：将虚拟力通过雅可比矩阵就可以转化成关节电机的扭矩。在速度控制中，我们利用时间t建立足端速度v与关节速度q之间的关系；在力矩控制中，则通过<strong><em>虚功定理</em></strong>建立足端力F与关节力矩 τ之间的关系</p>
+<h1 id="80qp">80.QP二次规划</h1>
+<p>https://zhuanlan.zhihu.com/p/527920446</p>
+<h2 id="81">81.为什么需要二次规划？</h2>
+<p>为了方便理解，我给出一个场景，当你只写出了狗的足端摆动相和支撑相的轨迹，将其离散化之后会发现只有每个轨迹点的坐标[(x1,y1,z1),(x2,y2,z2),.......(xm,ym,zm)]，还有刚才通过VMC求出的虚拟力，但是速度V却不知道怎么办，这个时候一种解决方式就是QP二次规划，我们想要在x这段距离下，创建出一个关于V的数组：[v1,v2,v3,v4,v5....,vm]，保证它在<strong><em>规定的时间T</em></strong>到达终点(xm,ym,zm)，并且<strong><em>保证平滑</em></strong>的<strong><em>最优速度</em></strong></p>
+<h2 id="82">82.具体公式</h2>
+<p>$$\min_x \frac{1}{2}x^THx+f^Tx$$</p>
+<p>注意H矩阵必须是半正定的（凸二次规划只要求半正定，正定是更强的条件）</p>
+<p>不等式约束：$Ax\leq b$，将x限制在一个范围，比如速度最大不超过10m/s</p>
+<p>以及等式约束：$A_{eq}x=b_{eq}$t时间必须到达</p>
+<p>在此基础上对其进行变式还可以使速度贴近一个值等等，这里不多说式子的推导</p>
+<h2 id="83">83.凸优化和非凸优化</h2>
+<p>这里默认是凸二次规划，实际上底层的二次规划计算不用看，其实我们之前都学过，对于一个二次函数，其二阶导是大于等于0，则为凸函数，其会有最低点，将上述表达式求出最低点，即可求出最小<strong><em>代价函数</em></strong>，即x是最优解</p>
+<h1 id="90lqr">90.LQR线性二次调节器</h1>
+<h2 id="91lqr">91.为什么需要LQR</h2>
+<p>PID是一种基于简单PD项反馈的系统，很多时候PID有奇效，但是大部分的项目都没有办法靠PID解决，实际上能解决的也就是电赛那种了</p>
+<p>LQR相比PID的优势就是更加平滑，控制更加稳定，不易发生PID那种振荡，缺点就是复杂，调Q,R参数难调，线性系统难以构建</p>
+<p>https://www.bilibili.com/video/BV1dm4y177tA/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
+<h2 id="92">92.具体公式</h2>
+<p>首先保证系统是线性的特征：</p>
+<p>$$x˙(t)=Ax(t)+Bu(t)$$</p>
+<p>离散后：</p>
+<p>$$xk+1=Axk+Buk$$</p>
+<ul>
+<li>$x(t)∈Rn$：系统状态向量</li>
+<li>$u(t)\in\mathbb{R}^{m}$：控制输入</li>
+<li>$A\in\mathbb{R}^{n\times n}$：系统状态矩阵，就是描述自身的状态</li>
+<li>$B\in\mathbb{R}^{n\times m}$：控制输入矩阵，就是描述输入对状态的改变</li>
+</ul>
+<p>之后就是构建代价函数</p>
+<p>$$J=∫0∞[xT(t)Qx(t)+uT(t)Ru(t)]dt$$</p>
+<p>Q和R分别是对跟踪状态和跟踪控制的权重，且你会发现LQR是无限时域，时间是从0开始到无限</p>
+<p>Q矩阵是半正定，R矩阵是正定，毕竟你想你的控制不能是0啊</p>
+<p>现在整个系统的规律有了，代价函数也有了，那么只需要计算代价函数的最小值即可，但是由于是无限时域，需要用到<strong><em>Riccati 方程</em></strong>，这个方程的本质其实就是贝尔曼最优</p>
+<p>$$ATP+PA−PBR−1BTP+Q=0$$</p>
+<p>先不用管这个公式哪来的，你先知道这个公式的A，B是整个系统的线性规律，Q和R是我们自己构建的参数权重矩阵，然后能计算出来P矩阵，有了这个P矩阵就可以计算反馈增益：</p>
+<p>$$K=R−1BTP$$</p>
+<p>这个时候你就求解完毕得到：</p>
+<p>$$u=−Kx$$</p>
+<p>说白了，就是一个线性系统，构建一个代价函数，但是由于是无限时域没有办法直接通过迭代求解，所以将无限的时间压缩成一个P，来计算最小代价函数，再通过P计算出K，无论是哪一个时刻，只需要知道状态x，就可以直接求出最优控制u，注意K完全可以直接通过离线计算，至于为什么可以压缩成P，那就是黎卡提方程的原理</p>
+<p>作为练手可以写一个倒立摆的LQR控制器在mujuco仿真中来跑。代码不多都不到一千行，模型可以网上随便找一个。可以使用ai，但是最好自己手推状态方程，并代入K值公式</p>
+<p>https://www.bilibili.com/video/BV1iN411X7LF/?spm_id_from=333.1387.favlist.content.click&amp;vd_source=73cdd23ba345f0787a7f226f06f4b797</p>
+<h1 id="100mpc">100.MPC控制</h1>
+<h2 id="101mpc">101.什么是MPC</h2>
+<p>MPC就是预测狗的未来状态和未来控制。它在思想上和强化学习相似（都是序贯决策），但本质是基于模型的最优控制：依赖已知的系统模型在线求解，不需要训练数据，不是强化学习的一种</p>
+<h2 id="102mpc">102.为什么需要MPC</h2>
+<p>MPC是有限时域的，只要你知道当前状态x0，时间间隔dt，以及系统的线性规律，就可以通过MPC进行预测和控制，这里把MPC和LQR放在一起讲也是因为他俩很相似</p>
+<h2 id="103mpc">103.MPC的具体公式</h2>
+<p>来，依旧是先写一个状态空间方程：</p>
+<p>$$xk+1=Axk+Buk$$</p>
+<p>想必都不陌生了，依旧是描述系统的线性规律</p>
+<p>我们现在的目的是自己给出轨迹序列x，然后求出控制序列u</p>
+<p>参考轨迹由上层的指令生成，包括：</p>
+<ul>
+<li>期望质心位置P（这里我写成P了，方便和轨迹序列x区分）</li>
+<li>期望质心速度v</li>
+<li>期望角度，也就是身体姿态 $ θ$</li>
+<li>期望角速度 $ ω$</li>
+</ul>
+<p>$$\mathbf{x} = \begin{bmatrix} x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi &amp; v_x &amp; v_y &amp; v_z &amp; \omega_x &amp; \omega_y &amp; \omega_z \end{bmatrix}^{\mathsf{T}} \in \mathbb{R}^{12}$$</p>
+<p>$$\mathbf{u} =\begin{bmatrix}f_{1x} &amp; f_{1y} &amp; f_{1z} &amp;f_{2x} &amp; f_{2y} &amp; f_{2z} &amp;f_{3x} &amp; f_{3y} &amp; f_{3z} &amp;f_{4x} &amp; f_{4y} &amp; f_{4z}\end{bmatrix}^{\mathsf{T}}\in \mathbb{R}^{12}$$</p>
+<p>通过牛顿第二定律，你会发现，具体的步骤自己去查</p>
+<p>$$\mathbf{A}=\begin{bmatrix}\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{I}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{I}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\end{bmatrix}\in\mathbb{R}^{12\times12}$$</p>
+<p>$$\mathbf{B}=\begin{bmatrix}\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3} &amp;\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3} &amp;\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3}\\frac{1}{m}\mathbf{I}<em>{3\times3} &amp;\frac{1}{m}\mathbf{I}</em>{3\times3} &amp;\frac{1}{m}\mathbf{I}<em>{3\times3} &amp;\frac{1}{m}\mathbf{I}</em>{3\times3}\\mathbf{I}^{-1}[\mathbf{r}<em>1]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>2]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>3]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>4]</em>{\times}\end{bmatrix}\in\mathbb{R}^{12\times12}$$</p>
+<p>这里的r是足端相对质心的位置，如下</p>
+<p>$$[\mathbf{r}<em>i]</em>{\times}=\begin{bmatrix}0 &amp; -r_{iz} &amp; r_{iy}\r_{iz} &amp; 0 &amp; -r_{ix}\-r_{iy} &amp; r_{ix} &amp; 0\end{bmatrix}$$</p>
+<p>最后得到</p>
+<p>$\dot{\mathbf{x}}=\mathbf{A}\mathbf{x}+\mathbf{B}\mathbf{u}+\mathbf{g}$   g项是重力项</p>
+<h2 id="104">104.代价函数</h2>
+<p>你会发现LQR是无限时域的，你可以将时间压缩，然后通过状态直接求出最优的控制，而MPC却是有限时域的，那就需要我们写出dt和N，比如dt = 0.02s，N = 20步，预测后续0.4秒的变化</p>
+<p>接下来依旧是构建目标函数：</p>
+<p>$$J = \sum_{i=1}^{N_p} | \mathbf{x}<em>{k+i} - \mathbf{x}</em>{k+i}^{\text{ref}} |<em>{\mathbf{Q}}^2 + \sum</em>{i=0}^{N_c-1} | \mathbf{u}<em>{k+i} - \mathbf{u}</em>{k+i}^{\text{ref}} |_{\mathbf{R}}^2$$</p>
+<p>看着挺复杂，实际上就是将状态是否跟踪预定轨迹和控制是否跟踪希望的控制的两个代价，在此基础上我们再加上控制惩罚，不让控制变化率太高防止抽风 $Δuk=uk−uk−1$：</p>
+<p>$$J = \sum_{i=1}^{N_p} | \mathbf{x}<em>{k+i} - \mathbf{x}</em>{k+i}^{\text{ref}} |<em>{\mathbf{Q}}^2 + \sum</em>{i=0}^{N_c-1} | \mathbf{u}<em>{k+i} - \mathbf{u}</em>{k+i}^{\text{ref}} |<em>{\mathbf{R}}^2 + \sum</em>{i=0}^{N_c-1} | \Delta \mathbf{u}<em>{k+i} |</em>{\mathbf{S}}^2$$</p>
+<h2 id="105">105.代价函数计算</h2>
+<p><img alt="图片展示了MPC（模型预测控制）的预测过程相关内容。假设当前时刻为k，已知当前状态x_k，未来预测N_p步。首先给出第一个预测状态公式x_{k+1} = Ax_k + Bu_k，再给出第二个预测状态公式x_{k+2} = Ax_{k+1} + Bu_{k+1}，接着将第二个状态代入第一个状态，得到x_{k+2} = A^2x_k + ABu_k + Bu_{k+1}，最后继续展开，得到x_{k+i} = A^ix_k + ∑(j=0到i-1)A^(i-1-j)Bu_{k+j}的公式。这些公式与上下文紧密相关，是对MPC预测过程的数学推导说明。" src="assets/MGLBbtINwogHIixJ9MkcCKPVnqd.png" /></p>
+<p>你会发现我只要知道当前的状态，然后我就可以写出未来所有的状态！</p>
+<p>而且最关键的是未来的状态只和第一步的x0还有未来的控制序列有关\~</p>
+<p>$$\mathbf{X}=\begin{bmatrix}\mathbf{x}_1\\mathbf{x}_2\\vdots\\mathbf{x}_N\end{bmatrix}=\begin{bmatrix}\mathbf{A}_d\mathbf{x}_0+\mathbf{B}_d\mathbf{u}_0+\mathbf{g}_d\\mathbf{A}_d^2\mathbf{x}_0+\mathbf{A}_d\mathbf{B}_d\mathbf{u}_0+\mathbf{B}_d\mathbf{u}_1+\left(\mathbf{A}_d+\mathbf{I}\right)\mathbf{g}_d\\vdots\\mathbf{A}_d^N\mathbf{x}_0+\mathbf{A}_d^{N-1}\mathbf{B}_d\mathbf{u}_0+\mathbf{A}_d^{N-2}\mathbf{B}_d\mathbf{u}<em>1+\cdots+\mathbf{B}<em>d\mathbf{u}</em>{N-1}+\sum</em>{j=0}^{N-1}\mathbf{A}_d^j\mathbf{g}_d\end{bmatrix}$$</p>
+<p>这里看着复杂，实际A我们知道，B我们知道，x0也知道，就差控制序列U也就是我们要求的</p>
+<p>将上面的X序列带入之前的代价公式，就消去了X，整个代价函数就只有关于U的变量，那么这个时候，代价函数就转化成了关于U的二次型</p>
+<p>之后，我们便可以使用QP二次规划对其进行求解，约束有：等式约束，摆动腿对身体的f是0；不等式约束：摩擦力的范围，官方叫法是摩擦锥</p>
+<p>最后取出控制序列U的第一个控制，对其进行不断的迭代，即每次运行只运行第一个控制u，但是这个u也包括对未来的识别</p>
+<p>实际上这个也只是简化完的mpc，简化了角度的相关计算，也简化了摆动腿内力对机身的控制，不然最后应该是18维矩阵</p>
+<p>质心偏移使用匹诺曹开源库实时计算</p>
+<p>求解器直接用开源的或者ai写</p>
+<h1 id="110wbc">110.WBC全身控制</h1>
+<h2 id="111wbc">111.为什么需要WBC</h2>
+<p>WBC和MPC的功能类似都是输入期望状态，通过一系列约束和QP进行求解最优值，那既然如此为啥还需要WBC呢</p>
+<p>区别：</p>
+<p>频率 </p>
+<p>MPC相当于这个机器人的大脑，是决策者。上面写了是有一段时间的预测值，每轮MPC走一轮假如为0.02s，则频率为50HZ,而WBC直接连接底层运动是高频的大约在500hz左右</p>
+<p>模型</p>
+<p>MPC使用的模型是单刚体模型(SRB) ，是简化的模型（不包含惯性力等），把机身想象成一个质量均匀的长方体，腿想象成无质量的木棍。决策变量为 $x = (p,v,\theta,\omega)$,分别为位置，速度，姿态，角速度，共12维向量，输出为 $u= (f_{fl},f_{FR},f_{RL},f_{RR})$</p>
+<p>WBC使用的是全状态模型(FSM),是一个机体实际的模型，考虑到了惯性力 比如：摆动腿的质量，当摆动足端有向前加速度时，支撑腿会对应进行补偿。或者拥有转动加速度时会根据COM(center of mass) 来分配力</p>
+<h2 id="112">112.具体公式</h2>
+<p>对于一个浮动基座机器人拥有决策变量 $x = (\ddot{q},f)$，共30维的向量， $\ddot{q}$为 18维，三维平动，三维转动，十二维关节，f为12维，四条腿每条腿三维的足端力（也有42维的决策变量，加入了关节力矩(12维) ）</p>
+<p>$$M(q) \ddot{q} + h(q, \dot{q}) = S^T \tau + \sum_{c} J_c^T \lambda_c \tag{}$$</p>
+<p>其中：</p>
+<ul>
+<li>$M(q) \in \mathbb{R}^{n_v \times n_v}$:广义质量矩阵(对称正定)</li>
+<li>$h(q, \dot{q}) \in \mathbb{R}^{n_v}$:科氏力 + 重力项</li>
+<li>$S \in \mathbb{R}^{n_a \times n_v}$:选择矩阵,$S = [0_{n_a \times 6} \;\; I_{n_a}]$,选出驱动关节</li>
+<li>$\tau \in \mathbb{R}^{n_a}$:关节扭矩(决策变量)</li>
+<li>$J_c \in \mathbb{R}^{3n_c \times n_v}$:接触 Jacobian(所有接触点堆叠)</li>
+<li>$\lambda_c \in \mathbb{R}^{3n_c}$:接触力(决策变量)</li>
+</ul>
+<p>再往下讲之前我们再复习一下QP，实际上一个QP问题是让一个二次型在满足约束的情况下寻找最小代价的解</p>
+<p>一个Ax = b ，可以通过变化得到二次型</p>
+<p>$$|Ax-b|^2 = x^T A^T A x - 2b^T A x + b^T b$$</p>
+<p>计算如下</p>
+<p><img alt="图片展示了从Ax=b出发，推导出x^TA^TAx - 2b^TAx + b^Tb = 0的推导过程。首先从Ax=b两边作平方范数得到(Ax - b)^T(Ax - b) = 0，展开后得到x^TA^TAx - x^TA^Tb - b^TAx + b^Tb = 0。再由x^TA^Tb = b^TAx，可得x^TA^TAx - 2b^TAx + b^Tb = 0。该图片是对上文“一个Ax=b，可以通过变化得到二次型”内容的数学推导展示，是后续计算和公式推导的基础。" src="assets/IoovbNdSgoH0HnxfKGhcVi8inOe.png" /></p>
+<p>假如你要写一个小车到达目标位置和目标速度的QP，可以将决策变量 $x＝（p,v）$</p>
+<p>目标函数如下：</p>
+<p>$$min(||Q(p_{act} - p_{ref})||^2 + ||P(v_{act} - v_{ref})||^2)$$</p>
+<p>根据上面计算</p>
+<p>$$x_{act}＝Ax$$</p>
+<p>$$A＝ \begin{array}{cc} I_{3} &amp; 0 \ 0&amp;I_3\end{array}$$</p>
+<p>可得二次型</p>
+<p>$$H＝A_p^TQ A_p + A_v^T P A_v $$</p>
+<p>$$g = -2(A_p^T Q b_p + A_v^T P b_v)$$</p>
+<p>回到WBC，像上面通过QP代价函数最小化，来求解决策变量，这个就叫做软约束也叫跟踪目标</p>
+<p>而在求解过程中不可能只有跟踪目标，还有物理世界的约束，比如小车可达最大速度，电机输出扭矩等，这类就叫硬约束</p>
+<p>而在四足中，硬约束就是 动力学约束，摩擦锥，接触无滑动约束等</p>
+<p>下面讲目前我实际写完后可以运行的目标函数和约束</p>
+<p>目标函数：</p>
+<ol>
+<li>质心跟踪</li>
+<li>足端力跟踪</li>
+<li>摆动跟踪</li>
+</ol>
+<p>约束：</p>
+<ol>
+<li>动力学约束</li>
+<li>摩擦锥约束</li>
+<li>接触无滑动约束</li>
+<li>摆动力为0</li>
+<li>摩擦锥约束</li>
+</ol>
+<h2 id="113">113.实际要点</h2>
+<p>https://github.com/Michael-Jetson/Robotics_Tutorial/blob/main/05_%E8%BF%90%E5%8A%A8%E6%8E%A7%E5%88%B6/10_%E8%B6%B3%E5%BC%8F/90_WBC%E5%88%86%E5%B1%82%E4%BC%98%E5%8C%96%E4%B8%8ETSID.md</p>
+<p>详细目标函数和约束参考如上文档吧，我只介绍一下一些要点</p>
+<ol>
+<li>当你使用mpc+wbc的时候就决定了你要用力控，那么一定先在仿真中跑一跑再上实机</li>
+<li>mpc和wbc在书写中有一个变量是接触情况contact_state,当你使用仿真中的实际接触情况的话你会发现他一定是四足全支撑状态，四条腿都是有力的且大小均匀。如果你要摆动的话就需要切换到你步态规划的接触情况，而接触情况不是必须要摆动的0.5T完毕后才可以落地，当遇到特殊情况，比如踩到石头了或者前面的路崎岖，那么你的实际触地情况是不同的，这个要注意。而怎么规划落地和怎么判断是不是真的接触到了，这个在之后会提及</li>
+<li>mpc+wbc的链路并不会输出摆动相的力，也不会让你的摆动腿动，甚至加的约束都是让摆动腿力为0，那为什么wbc还要加入期望摆动腿加速度并跟踪呢。第一点，你输入的摆动足端加速度是通过足端落脚点规划通过贝塞尔的二次微分来输入的轨迹加速度也就是前馈，并加入pd控制得到的参考加速度$a_{ref} = a_{ff} + K_p * e_p + K_d * e_v$这个把足端看为一个质点，没有质量，而实际肯定是有质量的，进入wbc通过动力学公式计算实际足端的加速度第二点，加速度的生成可以使用贝塞尔，但是z方向最少得是四阶贝塞尔，否则加速度起末点不为0,容易有强振动，而x方向的加速度可以使用三阶贝塞尔，因为平地上在x方向有足够的空间，不会碰到障碍物。而具体情况具体分析，之后如果遇到问题，x加速度的下图为x三阶，四阶贝塞尔的x-t / z-t曲线</li>
+</ol>
+<p><img alt="图片展示了机器狗行走时的运动学参数随时间变化的曲线。包含X、Z方向的位置、速度、加速度曲线，每种运动学参数又分为位置、速度、加速度三部分。位置曲线呈现上升趋势，速度曲线有正负波动，加速度曲线有正负变化。图中还标注了“Segment joint”（段关节）位置，对应Z方向速度曲线的峰值处。该图与上下文介绍的机器狗行走运动学参数相关，直观呈现了参数随时间的变化情况。" src="assets/AHKhbsE93opQbHxvOOtckjHInug.png" /></p>
+<ol>
+<li>wbc并不是只可以搭配mpc,可以rl+wbc的链路，mpc/rl作为上层决策，决定姿态怎么变，落脚点去哪</li>
+<li>姿态误差不是把当前世界系的期望欧拉角-实际欧拉角，是使用指数坐标来计算两个姿态直接的误差</li>
+<li>QP的求解器的维度问题</li>
+</ol>
+<p><code>Plain Text
+_solver.data()-&gt;setNumberOfVariables(n_var);
+_solver.data()-&gt;setNumberOfConstraints(n_con);</code></p>
+<p>第一行是决策变量的维度也就是$x = (\ddot{q},f)$的维度，30维</p>
+<p>第二行是硬约束的维度根据你的实际约束情况来定比如之前提到的5个硬约束，QP 约束总行数: 18(动力学) + 12(腿级: 支撑不打滑/摆动 f=0) + 20(摩擦锥, 4腿×5行)总共50行</p>
+<ol>
+<li>存在sim2real gap</li>
+</ol>
+<p><img alt="图片展示了Sim-to-Real gap（仿真与真实差异）相关内容。表格对比了仿真中和真实中在动力学、执行器、感知、环境等方面的差异，如仿真中动力学为理想化接触模型，真实中为复杂的真实接触；仿真中执行器为理想PD控制，真实中为电机延迟等。还说明了本质洞察，即Sim-to-Real gap是一个可以尝试“把仿真做得更真实”来完全消除的问题，但无法完美实现真实世界的所有细节。该图与上下文紧密相关，是对Sim-to-Real gap概念的详细阐述。" src="assets/PJDEbIX5QoIuylxLdMYcv1oGnwb.png" /></p>
+  </article>
+</main>
+<footer class="foot">山西农大 GOW 战队 · 知识文档</footer>
+</body>
+</html>

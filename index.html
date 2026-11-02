@@ -1,12 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOW 战队</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOW 战队 · 知识文档</title>
+<style>
+:root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
+@media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.7}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:960px;margin:0 auto;padding:64px 24px 80px}
+h1{font-size:34px;margin:0 0 10px;letter-spacing:1px}
+.sub{color:var(--muted);margin:0 0 40px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{display:flex;flex-direction:column;gap:6px;padding:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:var(--fg);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.06);text-decoration:none}
+.ico{font-size:26px}
+.t{font-size:18px;font-weight:700}
+.d{font-size:14px;color:var(--muted);flex:1}
+.go{font-size:13px;color:var(--accent);margin-top:6px}
+.foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line);margin-top:48px}
+</style>
 </head>
 <body>
-    <h1>欢迎来到 GOW 战队网站</h1>
-    <p>山西农大 GOW 战队开源项目。</p>
+<main class="wrap">
+  <h1>GOW 战队知识库</h1>
+  <p class="sub">山西农大 GOW 战队开源项目 · 学习文档与算法笔记</p>
+  <div class="grid">
+      <a class="card" href="docs/cpp.html">
+        <span class="ico">🐍</span>
+        <span class="t">C++重点</span>
+        <span class="d">高级语言的学习路径与工程实践中的 C++ 核心知识</span>
+        <span class="go">阅读 →</span>
+      </a>
+      <a class="card" href="docs/linux.html">
+        <span class="ico">🐧</span>
+        <span class="t">Linux扫盲</span>
+        <span class="d">快速上手 Linux 的常见工具与排查思路</span>
+        <span class="go">阅读 →</span>
+      </a>
+      <a class="card" href="docs/dog.html">
+        <span class="ico">🐕</span>
+        <span class="t">机器狗算法扫盲</span>
+        <span class="d">机器狗算法入门与比赛实践要点</span>
+        <span class="go">阅读 →</span>
+      </a>
+      <a class="card" href="docs/rl.html">
+        <span class="ico">📐</span>
+        <span class="t">强化学习数学基础</span>
+        <span class="d">从零开始的强化学习数学基础</span>
+        <span class="go">阅读 →</span>
+      </a>
+  </div>
+</main>
+<footer class="foot">山西农大 GOW 战队 · 开源知识文档</footer>
 </body>
 </html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++重点 · GOW 战队</title>
+<style>
+:root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
+@media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.75;font-size:16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:var(--bg);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.brand{font-weight:700;color:var(--fg);letter-spacing:.5px}
+.back{font-size:14px;color:var(--muted)}
+.wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px}
+.doc h1{font-size:28px;margin:8px 0 24px;line-height:1.35}
+.doc h2{font-size:22px;margin:40px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc h3{font-size:18px;margin:28px 0 10px}
+.doc p{margin:14px 0}
+.doc img{max-width:100%;height:auto;border-radius:8px;display:block;margin:18px auto;border:1px solid var(--line)}
+.doc blockquote{margin:18px 0;padding:12px 16px;background:var(--card);border-left:3px solid var(--accent);border-radius:6px;color:var(--fg)}
+.doc blockquote p{margin:6px 0}
+.doc code{background:var(--card);padding:2px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.doc pre{background:var(--card);padding:16px;border-radius:8px;overflow:auto;border:1px solid var(--line)}
+.doc pre code{background:none;padding:0;font-size:.9em}
+.doc table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+.doc th{background:var(--card);font-weight:600;white-space:nowrap}
+.doc ul,.doc ol{padding-left:24px}
+.doc li{margin:6px 0}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:0 0 28px;font-size:14px}
+.toc ul{margin:0;padding-left:18px}
+.toc>ul{padding-left:0;list-style:none}
+.toc li{margin:4px 0}
+.foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">GOW 战队</a>
+  <a class="back" href="../index.html">← 返回主页</a>
+</header>
+<main class="wrap">
+  <article class="doc">
+    <h1 id="c">C++重点</h1>
+<div class="toc">
+<ul>
+<li><a href="#_4">面向对象编程</a></li>
+<li><a href="#_5">初始化列表</a></li>
+<li><a href="#_6">智能指针</a></li>
+<li><a href="#_7">作用域</a></li>
+<li><a href="#stl">STL</a></li>
+<li><a href="#lambda">Lambda</a></li>
+<li><a href="#const">const</a></li>
+<li><a href="#static">static</a></li>
+<li><a href="#auto">auto</a></li>
+<li><a href="#_8">内联函数</a></li>
+<li><a href="#_9">动态和静态</a></li>
+<li><a href="#_10">虚函数</a></li>
+<li><a href="#_11">互斥锁</a></li>
+<li><a href="#_12">多线程</a></li>
+<li><a href="#throw">throw栈展开</a></li>
+<li><a href="#_14">基本概念（必须会）</a></li>
+<li><a href="#aic">难题，让AI出题，对c++要有敬畏之心</a><ul>
+<li><a href="#1-const">题 1：指针 + 引用 + const</a></li>
+<li><a href="#3">题 3：移动构造</a></li>
+<li><a href="#4">题 4：多态 + 析构函数</a></li>
+<li><a href="#5vector">题 5：vector 迭代器失效</a></li>
+<li><a href="#6">题 6：引用到底是不是对象？</a></li>
+<li><a href="#9const">题 9：const 成员函数</a></li>
+<li><a href="#10-mutex">题 10：多线程 + mutex</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<blockquote>
+<p>🦄  高级语言的学习不是一两天就能掌握的，但是入门的话却可以快速的学习，c++/python的学习不是自己无脑背一些八股，也不是花大量的时间去学习语法，只有自己去看源码，写代码才是学习高级语言的正确方式</p>
+</blockquote>
+<h1 id="_1">为什么我们仍然需要学习编程</h1>
+<p>在去年的时候有一个视频，论证当下AI对我们程序员的影响，台下有一位观众提出质疑：可能今后AI发展会让一个程序员不需要有编写代码的能力，但是当下是不可行的，台上的人发表了一个逆天的言论：你凭什么剥夺一个不会写代码的人写代码的权利（大致就这意思）</p>
+<p>通过上述的一个例子，已经把我们当下的情况全部给罗列出来，今年AI的发展相比去年已经是一个质的飞跃，不少人提出了一个问题，“自然语言编程”能不能像高级语言替代汇编语言一样，最后我们All in AI</p>
+<p>这句话在当下一定是不对的，如果你的代码能力不够，你其实连让AI生成什么的能力也没有，说白了你连当驾驶员都不会；那么紧接着你的阅读源码的能力也没有，所有的东西最后都需要AI的帮助，效率下降，AI时代你更应该有读代码的能力；同时你也没有修改AI的能力，很多时候AI说的确实没有错，但是对于你来说不适用；同时你是嵌入式方向，从理论到实践，从仿真到实机的gap比你想的多。总而言之，你需要学代码</p>
+<p><img alt="这张配文漫画呈现了一个趣味互动场景：一位背着书包的孩子指向身前，站在原地的少女将标有“数理基础”的书本扔出，配文展现了孩子对“学这些有什么用”的反问——学习相关知识是为了能够分辨、判断话语是否合理，也恰好契合文档中关于程序员需要具备代码、源码阅读能力的核心观点，直白地表达了掌握相关基础能力才能避免被不当言论误导的内涵。" src="assets/SyprbyF0joO4aCxBhr1cJCHTn2c.png" /></p>
+<h1 id="_2">为什么要从实践中学习编程</h1>
+<p>我目前是大三，在大一打电赛前用python分装了一些功能包，<strong>那是我第一次认识到面向对象到底是什么</strong>，回过头看面向对象的文档才知道里面到底讲得是什么；暑假从0开始借助AI来搓智能车的代码，那是我第一次真正的写一个较为大型的代码，<strong>从那时候开始才知道一个工程代码，多文件结合应该怎么写</strong></p>
+<p>大二开学的时候，暑假仅仅过了一个月，但是看见代码又会感觉到陌生，基本上每一个学期的开学几天需要复习一下重点的语法，后面打robocon也是0开始手搓，<strong>到那时候才知道如何封装一个虚函数，如何写一个模板，以及处理多线程的处理等等</strong>，但是最后还是写乱了，只能靠AI重构</p>
+<p>到现在大三刚开学快一个月，我在看源码的时候还是会感到陌生，让我从0开始手搓一个代码我也做不到，更别说再弄一些高级的语法，昨天我看源码的时候，也忘了很多基本的语法，<strong>由此可见，代码的学习不是一朝一夕，而是要在本科阶段的不断积累</strong></p>
+<h1 id="_3">怎么学习编程</h1>
+<p><strong>首先不要All In AI</strong>，直接使用agent coding的话，如果出现bug的话，你根本无从排查。因为你对这个代码一点都不了解，同时代码量很巨大，你再让AI更改最后的结果是吃了大量的token可能还改不好</p>
+<p>其次要会使用AI，一个真正好的程序员会巧妙的使用AI，他知道AI的缺点和优点，提升自己的效率，我在这里提供一个思路，假如说你想要实操一个多线程的C++代码，可以先让AI总结常见的多线程的坑，同时让AI生成一个例子，在自己确保完全理解例子的源码之后，试着自己写一个简单的例程，等到你认为自己完全熟悉相关的流程，再使用agent，帮助自己完成繁琐的流程</p>
+<p>最后要常复习，当下AI对我们的影响 ，让编程的门槛变得很低，确实不需要我们去深耕，但是就算是基础的知识也够喝一壶了</p>
+<h1 id="c_1">C++知识清单</h1>
+<p>入门的知识不在这里展开，只讲重要的，常见的知识：</p>
+<blockquote>
+<p>👍  大型工程文件目录如何创建，面向对象，多态继承封装三要素，作用域，STL，智能指针（内存释放，初始化），初始化列表，const，static，auto等，虚函数/纯虚函数，Lambda，多线程/互斥锁（差不多这些就够了，遇到不会问AI）</p>
+</blockquote>
+<p>学习方式：当你学完以上这些知识点之后，查看下面的知识点，看看自己能不能理解，下面这些不是让你直接看着学的，因为肯定看不懂，我也没有必要写详细的教学，如果明白下面的知识点是啥意思，同时能回答出提问的问题，那证明该方面的基本知识已经了解</p>
+<h1 id="c_2">C++高级编程</h1>
+<p>看之前先回答这几个问题，看看你适不适合看本文章：</p>
+<ol>
+<li>指针是什么？怎么用？</li>
+<li>hpp的作用是什么？</li>
+<li>什么是声明，什么是定义，什么是引用？</li>
+<li>你是否已经对c/c++的语法有一个差不多的了解如while,for,if等基本语法</li>
+</ol>
+<h2 id="_4">面向对象编程</h2>
+<p><strong>封装</strong>：将数据和操作数据的函数放在同一个类中，并通过 <code>private/public</code> 控制外部访问</p>
+<p><strong>继承</strong>：子类继承父类的成员和接口，用于表示 <code>is-a</code> 关系。</p>
+<p><strong>多态</strong>：父类定义统一接口，不同子类实现不同功能，通常通过 <code>virtual</code> 实现</p>
+<p>构造函数对象创建时自动调用，用于初始化成员变量和建立对象状态<code>Robot(double position) : position_(position){}</code><strong>更推荐初始化列表</strong></p>
+<p>析构函数对象生命周期结束时自动调用，主要用于释放资源<code>~Robot();</code><strong>更推荐智能指针</strong></p>
+<p>提问：面向对象的三要素是什么？分别对应什么关键字如class等？你能不能自己写出一个构造函数？new和delete分别的作用是什么，为什么析构函数里要delete？什么是override？什么是实例化，有几种实例化方法？</p>
+<h2 id="_5">初始化列表</h2>
+<p>在构造函数后面直接对成员变量初始化</p>
+<pre><code class="language-C++">class Robot {
+    public:
+    Robot(double position) : position_(position) {}
+
+    private:
+    double position_;
+   };
+</code></pre>
+<p>提问：你是否能说出初始化列表和在构造函数体内赋值的不同，以及初始化列表的好处</p>
+<h2 id="_6">智能指针</h2>
+<p><strong><code>unique_ptr</code>独占所有权</strong>，一个对象只能有一个 <code>unique_ptr</code> 管理，无法复制但是可以移动所有权</p>
+<p><strong><code>shared_ptr</code>共享所有权</strong>，多个 <code>shared_ptr</code> 可以共同管理一个对象，与unique_ptr相对</p>
+<p>提问：为什么使用智能指针不需要手动释放内存</p>
+<h2 id="_7">作用域</h2>
+<table>
+<thead>
+<tr>
+<th>作用域</th>
+<th>范围</th>
+<th>生命周期</th>
+<th>典型例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>局部作用域</td>
+<td>函数/代码块 {} 内</td>
+<td>进入作用域创建，离开销毁</td>
+<td>int x = 1;</td>
+</tr>
+<tr>
+<td>函数作用域</td>
+<td>函数体内，主要指标签（label）</td>
+<td>函数执行期间</td>
+<td>goto label;</td>
+</tr>
+<tr>
+<td>类作用域</td>
+<td>class 内部</td>
+<td>静态成员随程序，非静态成员随对象</td>
+<td>Robot::move()</td>
+</tr>
+<tr>
+<td>命名空间作用域</td>
+<td>namespace 内</td>
+<td>通常程序整个运行期间</td>
+<td>std::vector</td>
+</tr>
+<tr>
+<td>全局作用域</td>
+<td>整个源文件/程序</td>
+<td>通常程序整个运行期间</td>
+<td>int global_var;</td>
+</tr>
+<tr>
+<td>文件作用域</td>
+<td>.cpp 文件内部</td>
+<td>通常程序整个运行期间</td>
+<td>static int count;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>访问权限</th>
+<th>类内部</th>
+<th>子类</th>
+<th>类外部</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>private</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<p>提问：namespace的具体用法，解决了什么问题？一般什么时候用private,什么时候用public</p>
+<h2 id="stl">STL</h2>
+<p><code>std::vector&lt;int&gt; v{1, 2, 3, 4, 5};</code>，将多个数字放在一个容器中，底层是一段连续内存，通过迭代器访问数据，内部封装了多个成员函数可以直接调用，常见也常用的容器就是vector，array</p>
+<p>reserve只预留容量（capacity）、不改size，用来避免多次扩容时反复搬移元素</p>
+<p>push_back直接将元素追加到末尾，重新分配内存会导致原来的迭代器失效</p>
+<p>提问：为什么 <code>vector</code> 的迭代器支持 <code>it + n</code>，而 <code>list</code> 的迭代器不支持？</p>
+<h2 id="lambda">Lambda</h2>
+<p>匿名函数对象：编译器会为它生成一个闭包类（可以理解成内部定义了一个重载了 operator() 的结构体），捕获的变量就是该类的成员</p>
+<h2 id="const">const</h2>
+<p>定义一个变量，但是不可以直接修改，最常用的是<code>void fun(const std::vector&lt;double&gt;&amp; v)</code></p>
+<p>对于外部传进来的变量只读，不进行修改，保证外部的变量不会因为这个函数改变</p>
+<p>提问：如果不加const而直接加&amp;是什么意思？</p>
+<h2 id="static">static</h2>
+<p><code>static int count = 0;</code>静态变量，直到程序结束一直存在</p>
+<p>作为类中的变量，在实例化的时候，所有的实例化成员都指向的是一个static变量</p>
+<p><code>static int global_value;</code>这个变量只有在当前的cpp文件中可见，对其他的文件不可见</p>
+<p>提问：static在函数中，全局/文件作用域的变量或函数，和在类中调用分别有什么不同</p>
+<h2 id="auto">auto</h2>
+<p><code>auto</code> 用于<strong>让编译器根据初始化表达式自动推导变量类型</strong>，属于编译期类型推导，不是动态类型</p>
+<p>提问：为啥有的时候不推荐用auto</p>
+<h2 id="_8">内联函数</h2>
+<p>使用的是inline， 仅仅是作为建议，将原本的函数调用（压栈、跳转、返回）替换成直接展开的函数体计算</p>
+<h2 id="_9">动态和静态</h2>
+<p>先说java，因为这个考试会考：static方法里没有this，只能访问静态成员；要调用非静态成员，必须先把对象实例化出来，再用这个对象（或指向它的引用）去调用。static方法属于类、不依赖对象，可以直接用类名调用</p>
+<p>再说回c++，虚函数就是可以支持多态的函数，如果是普通的函数，那他就不支持多态，是静态绑定</p>
+<p>类的static数据成员要在类外定义（C++17起可以用inline在类内定义），可以直接通过类名访问，生命周期贯穿整个程序</p>
+<p>析构函数负责清理对象持有的资源，对象本身的内存由delete回收（栈对象由栈帧回收）</p>
+<h2 id="_10">虚函数</h2>
+<p>当进行Animal* p = &dog;的时候，p-&gt;speak();仍然是指向的是父类的函数，这时候如果将父类的成员函数变成virtual，这样最后调用的还是dog中已经override的成员函数</p>
+<p>编写方法提倡使用<code>class Dog : public Animal{ public: void speak() override; };</code></p>
+<p>编译器可以检查是否真的覆写了该成员函数，原因是函数签名有一点不一样就不算override,比如const,函数名打错了等等</p>
+<p>虚函数最终的常见使用还是提供接口，工厂模式等，甚至还有多态运算符和虚析构函数，这里不做过多说明</p>
+<p>纯虚函数：子类要实现（能被实例化）就必须override,语法就是在虚函数后面等于0，同时这意味着无法实例化</p>
+<p>注意当虚函数被重写的时候，属于动态</p>
+<p>提问：你是否自己能写出一个使用虚函数提供接口的父类，然后再子类中重新override它？什么是动态和静态？</p>
+<h2 id="_11">互斥锁</h2>
+<pre><code class="language-C++">Robot state;  // 假设对象已创建
+std::mutex mtx;
+{
+    std::lock_guard&lt;std::mutex&gt; lock(mtx);
+    state.position = 1.0;
+}
+</code></pre>
+<h2 id="_12">多线程</h2>
+<pre><code class="language-C++"> std::thread t(update);
+  t.join();
+</code></pre>
+<p>提问：多线程也分好几种多线程，你是否能说出<code>join()</code>和<code>detach()</code>的区别，以及多线程和互斥锁如何互相工作？</p>
+<h2 id="throw">throw栈展开</h2>
+<p>C++ 的异常不是 return 码，而是一个 运行时控制流跳转机制，这个过程叫做栈展开，遇到throw的时候，会对已构造的局部对象依次调用析构函数退栈，相比较传统的暴力退出，其无需挨个嵌套return,同时资源管理更完善</p>
+<p>static_cast<int>(expr) 是静态类型转换运算符，不是模板</p>
+<p>assert(cond) 在条件为假时触发断言失败并终止程序，条件成立时什么都不做</p>
+<h1 id="_13">随机考察</h1>
+<h2 id="_14">基本概念（必须会）</h2>
+<p>不问ai看看你心中是否有大体答案</p>
+<p>1.假如我现在机器人要有三种不同的模式，如何用面向对象的思想去编写代码？写出伪代码</p>
+<p>2.如果我不想让函数内部改变参数的变量，我应该如何传参？</p>
+<p>3.成员变量一般使用什么作用域？std的用处是什么？</p>
+<p>4.容器一般用什么？如果要添加或删除元素应该怎么做？</p>
+<p>5.动态库和静态库的区别，程序中什么是静态的，什么是动态的？</p>
+<p>6.什么是拷贝，什么是移动，什么时候用拷贝，什么时候用移动，函数中使用的参数是拷贝还是移动？</p>
+<p>7.下面能不能同时存在？</p>
+<pre><code class="language-C++">void foo(int x);
+void foo(double x);
+void foo(int&amp; x);
+</code></pre>
+<h2 id="aic">难题，让AI出题，对c++要有敬畏之心</h2>
+<h3 id="1-const">题 1：指针 + 引用 + const</h3>
+<p>```Plain Text
+int a = 10;
+int b = 20;</p>
+<p>int* p = &a;
+int&amp; r = a;
+const int* ptr_to_const = &a;
+int* const const_ptr = &a;</p>
+<pre><code>
+分别回答：
+
+1. `p` 能不能修改 `a`？ 
+2. `ptr_to_const` 能不能修改 `a`？ 
+3. `const_ptr` 能不能指向 `b`？ 
+4. `r` 能不能让 `a` 变成 `30`？ 
+5. `const int*` 和 `int* const` 到底是谁不能变？ 
+
+---
+
+### 题 2：拷贝构造 + 指针
+
+```Plain Text
+class A {
+public:
+    A() {
+        data = new int(10);
+    }
+
+    ~A() {
+        delete data;
+    }
+
+    int* data;
+};
+
+A a;
+A b = a;
+</code></pre>
+<p>问：</p>
+<p><strong>这段代码有什么严重问题？</strong></p>
+<p>如果程序结束时发生崩溃，你认为最可能是什么原因？</p>
+<p>进一步问：</p>
+<blockquote>
+<p>如果我要让 <code>A b = a</code> 真正实现“深拷贝”，应该怎么设计？</p>
+</blockquote>
+<hr />
+<h3 id="3">题 3：移动构造</h3>
+<p>```Plain Text
+std::vector<int> create()
+{
+    std::vector<int> v(1000000);
+    return v;
+}</p>
+<p>std::vector<int> a = create();</p>
+<pre><code>
+为什么这里**不一定需要把 100 万个 `int` 全部复制一遍**？
+
+进一步：
+
+```Plain Text
+std::vector&lt;int&gt; a;
+std::vector&lt;int&gt; b = std::move(a);
+</code></pre>
+<p>执行之后：</p>
+<ul>
+<li><code>b</code> 怎么了？ </li>
+<li><code>a</code> 怎么了？ </li>
+<li><code>a</code> 还能不能继续使用？ </li>
+</ul>
+<hr />
+<h3 id="4">题 4：多态 + 析构函数</h3>
+<p>```Plain Text
+class Controller {
+public:
+    virtual void update() {
+        std::cout &lt;&lt; "Controller\n";
+    }</p>
+<pre><code>~Controller() {
+    std::cout &lt;&lt; "~Controller\n";
+}
+</code></pre>
+<p>};</p>
+<p>class WBCController : public Controller {
+public:
+    void update() override {
+        std::cout &lt;&lt; "WBC\n";
+    }</p>
+<pre><code>~WBCController() {
+    std::cout &lt;&lt; "~WBC\n";
+}
+</code></pre>
+<p>};</p>
+<p>Controller* c = new WBCController;</p>
+<p>c-&gt;update();
+delete c;</p>
+<pre><code>
+问：
+
+1. `update()` 输出什么？ 
+2. `delete c` 时会调用谁的析构函数？ 
+3.  上面的代码有什么问题？ 
+4.  应该怎么修改？ 
+
+这个非常重要，因为机器人代码里经常有：
+
+```Plain Text
+Controller*
+</code></pre>
+<p>指向不同的控制器实现。</p>
+<hr />
+<h3 id="5vector">题 5：vector 迭代器失效</h3>
+<p>```Plain Text
+std::vector<int> v{1, 2, 3};</p>
+<p>auto it = v.begin();</p>
+<p>v.push_back(4);</p>
+<p>std::cout &lt;&lt; *it;</p>
+<pre><code>
+问：
+
+**`*it` 能不能保证还是 `1`？**
+
+如果不能，为什么？
+
+再问：
+
+```Plain Text
+v.reserve(100);
+
+auto it = v.begin();
+
+v.push_back(4);
+
+std::cout &lt;&lt; *it;
+</code></pre>
+<p>这次呢？</p>
+<hr />
+<h3 id="6">题 6：引用到底是不是对象？</h3>
+<p>```Plain Text
+int a = 10;
+int&amp; r = a;</p>
+<p>r = 20;</p>
+<pre><code>
+执行以后：
+
+```Plain Text
+a
+r
+</code></pre>
+<p>分别是多少？</p>
+<p>然后回答：</p>
+<blockquote>
+<p><code>r</code> 本身是不是一个独立存储 <code>int</code> 的变量？</p>
+</blockquote>
+<p>再问：</p>
+<p>```Plain Text
+int&amp; r = a;
+r = b;</p>
+<pre><code>
+这里是：
+
+**让 `r` 改为引用 `b`，还是把 `b` 的值赋给 `a`？**
+
+---
+
+### 题 7：unique_ptr
+
+下面代码为什么编译不过？
+
+```Plain Text
+std::unique_ptr&lt;Robot&gt; a = std::make_unique&lt;Robot&gt;();
+
+std::unique_ptr&lt;Robot&gt; b = a;
+</code></pre>
+<p>应该怎么写？</p>
+<p>```Plain Text
+std::unique_ptr<Robot> b = ?????;</p>
+<pre><code>
+然后解释：
+
+&gt; 为什么 `unique_ptr` 故意不允许拷贝？
+
+---
+
+### 题 8：shared_ptr 的坑
+
+```Plain Text
+struct Robot {
+    std::shared_ptr&lt;Robot&gt; other;
+};
+
+auto a = std::make_shared&lt;Robot&gt;();
+auto b = std::make_shared&lt;Robot&gt;();
+
+a-&gt;other = b;
+b-&gt;other = a;
+</code></pre>
+<p>问：</p>
+<p><strong>这里有什么问题？</strong></p>
+<p>为什么两个对象即使离开作用域，也可能无法被释放？</p>
+<p>应该怎么解决？</p>
+<hr />
+<h3 id="9const">题 9：const 成员函数</h3>
+<p>```Plain Text
+class Robot {
+public:
+    double getPosition() {
+        return position_;
+    }</p>
+<p>private:
+    double position_;
+};</p>
+<p>const Robot robot;</p>
+<p>robot.getPosition();</p>
+<pre><code>
+为什么可能编译不过？
+
+应该怎么修改 `getPosition()`？
+
+然后回答：
+
+```Plain Text
+double getPosition() const;
+</code></pre>
+<p>最后面的 <code>const</code> 是什么意思？</p>
+<hr />
+<h3 id="10-mutex">题 10：多线程 + mutex</h3>
+<p>```Plain Text
+int count = 0;</p>
+<p>void worker()
+{
+    for (int i = 0; i &lt; 100000; i++) {
+        count++;
+    }
+}</p>
+<pre><code>
+两个线程同时执行 `worker()`：
+
+```Plain Text
+std::thread t1(worker);
+std::thread t2(worker);
+
+t1.join();
+t2.join();
+</code></pre>
+<p>最终：</p>
+<p>```Plain Text
+count</p>
+<pre><code>
+**是不是一定等于 `200000`？**
+
+如果不是，为什么？
+
+以及：
+
+```Plain Text
+std::mutex mtx;
+</code></pre>
+<p>你准备把锁加在哪里？</p>
+  </article>
+</main>
+<footer class="foot">山西农大 GOW 战队 · 知识文档</footer>
+</body>
+</html>
