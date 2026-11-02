@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>强化学习数学基础 · GOW 战队</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']});"></script>
 <style>
 :root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
 @media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
@@ -34,6 +38,8 @@ a:hover{text-decoration:underline}
 .toc ul{margin:0;padding-left:18px}
 .toc>ul{padding-left:0;list-style:none}
 .toc li{margin:4px 0}
+.math-display{overflow-x:auto;overflow-y:hidden;margin:20px 0;text-align:center}
+.katex{font-size:1.05em}
 .foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -85,7 +91,7 @@ a:hover{text-decoration:underline}
 <h2 id="_4">有偏估计</h2>
 <p>假如这个硬币并不均匀，正面概率其实是 0.7，而你一开始假定它是 0.5。这属于“模型假设错了”，不是估计量有偏：即使硬币不均匀，用大量抛掷的频率去估计它的真实概率，依然是无偏的。有偏指的是估计量本身的期望不等于真实参数，即 E[θ̂] ≠ θ</p>
 <p>因此，对于无偏估计的数学表达就是：</p>
-<p>$ \boxed{E[\hat{\theta}]=\theta} $对于估计量theta hat的期望E，与真实值theta相等</p>
+<p><span class="math">\(\boxed{E[\hat{\theta}]=\theta}\)</span>对于估计量theta hat的期望E，与真实值theta相等</p>
 <p>无偏性与样本量无关：只要估计量的构造正确（例如对 iid 样本取平均），对任意样本量 n 都有 E[θ̂]=θ。而“样本独立同分布且数量足够大时 θ̂ 收敛到 θ”说的是大数定律给出的一致性，不是无偏性</p>
 <h2 id="_5">蒙特卡洛算法</h2>
 <p>蒙特卡洛（Monte Carlo，MC）<strong>就是一种典型的无偏估计</strong></p>
@@ -94,7 +100,7 @@ a:hover{text-decoration:underline}
 <p>P(向后走 | 走进死胡同) = 1</p>
 <p>P(向左走 | 前面有两条路) = 0.5 &amp; P(向右走 | 前面有两条路) = 0.5</p>
 <p>P(向左走 | 前面有三条路) = 0.3 &amp; P(向右走 | 前面有三条路) = 0.1 &amp; P(向前走 | 前面有三条路) = 0.2 &amp; P(向后走 | 前面有三条路) = 0.4 等等...</p>
-<p>智能体会遵循随机策略：$a\sim\pi(a\mid s)$，给定状态后按照概率分布采样动作，同时对不同的状态定义奖励</p>
+<p>智能体会遵循随机策略：<span class="math">\(a\sim\pi(a\mid s)\)</span>，给定状态后按照概率分布采样动作，同时对不同的状态定义奖励</p>
 <table>
 <thead>
 <tr>
@@ -116,26 +122,26 @@ a:hover{text-decoration:underline}
 <p>有了这些奖励后，我们的智能体便可以根据策略 π 去玩这个迷宫，但是其决策是随机的，所以有的时候奖励很高，有的时候奖励又会很低，那么如何判断这个策略到底好不好呢？就轮到我们的MC算法登场了</p>
 <p>先确定我们的目标：目标就是在不同的状态下（分叉路口），<strong>优化我的策略</strong>（向哪个方向走），让这个策略变好（能更加快速的到达出口，同时获取更多的奖励）</p>
 <p>然后定义一个<strong>状态价值函数</strong>：</p>
-<p>$$V^\pi(s)=E_\pi[G_t\mid S_t=s]$$</p>
-<p>从状态 $s$ 出发，按照策略 $\pi$ 行动，未来能够获得的奖励V（一般状态价值用V表示），可是这个策略并不唯一</p>
+<div class="math-display">\[V^\pi(s)=E_\pi[G_t\mid S_t=s]\]</div>
+<p>从状态 <span class="math">\(s\)</span> 出发，按照策略 <span class="math">\(\pi\)</span> 行动，未来能够获得的奖励V（一般状态价值用V表示），可是这个策略并不唯一</p>
 <p>因此，蒙特卡洛就是让这个智能体在当前的策略下一直玩这个迷宫，当样本量够多的时候，则当前估计的状态价值函数等于真实的状态价值函数，即对N个价值求和然后取平均：</p>
-<p>$$\boxed{ \hat V^\pi(s)=\frac{1}{N}\sum_{i=1}^{N}G^{(i)} }$$</p>
+<div class="math-display">\[\boxed{ \hat V^\pi(s)=\frac{1}{N}\sum_{i=1}^{N}G^{(i)} }\]</div>
 <p>缺点就是通常需要一个 episode（完整地走完整个迷宫）结束后，才能计算这条轨迹上各个时间步的完整回报，再用它们估计价值，比较消耗算力，同时方差高，优点是这真是一个酣畅淋漓的无偏估计啊</p>
 <h2 id="_6">时序差分算法</h2>
 <p>讲完无偏估计mc，那不得不引出<strong>有偏估计时序差分(TD)</strong></p>
 <p>蒙特卡洛是计算累计一个回合的回报，每一项奖励R(Rward)全部都是真实的采样，既然要省算力，那不得不对其进行优化（预测），也就是TD算法：利用当前奖励和下一状态的价值估计，来更新当前状态的价值：</p>
-<p>$$\boxed{ V(s_t)\leftarrow V(s_t)+ \alpha\left[ r_t+\gamma V(s_{t+1})-V(s_t) \right] }$$</p>
-<p>看不懂没有关系，我先给你们简化一下：令学习率 $\alpha=1$，折扣因子 $\gamma=1$，代入原公式</p>
-<p>$$\boxed{V(s_t)\leftarrow r_t+V(s_{t+1})} $$</p>
-<p>$V(s_t)$：当前状态的价值估计</p>
-<p>$r_t$：从当前状态转移到下一状态时获得的奖励</p>
+<div class="math-display">\[\boxed{ V(s_t)\leftarrow V(s_t)+ \alpha\left[ r_t+\gamma V(s_{t+1})-V(s_t) \right] }\]</div>
+<p>看不懂没有关系，我先给你们简化一下：令学习率 <span class="math">\(\alpha=1\)</span>，折扣因子 <span class="math">\(\gamma=1\)</span>，代入原公式</p>
+<div class="math-display">\[\boxed{V(s_t)\leftarrow r_t+V(s_{t+1})}\]</div>
+<p><span class="math">\(V(s_t)\)</span>：当前状态的价值估计</p>
+<p><span class="math">\(r_t\)</span>：从当前状态转移到下一状态时获得的奖励</p>
 <p>通过这个公式你会发现其是通过递归实现自举</p>
 <p><strong>说白了就是对未来进行一个进行一个预测</strong>，然后通过实践，不断得更新这个预测，就好比赌球：一开始先盲猜一个比分，然后根据赛场的局势不断预测最后的比分。当然，比赛预测只是类比；在强化学习中，TD 更新的是未来累计回报的期望，而不是最终比分</p>
 <p>再回到最初的公式</p>
-<p>$\gamma$：折扣因子，控制未来奖励的重要程度，大部分设置为0.95，越小则重视当下，越大则注重未来</p>
-<p>$V(s_{t+1})$：下一状态的价值估计</p>
-<p>$\alpha$：学习率，控制每次更新的幅度，如果学习率过大，那么当你看见一个球队有一点优势，你就会直接变脸（墙头草），相反，学习率太小则只注重历史（经验主义），在表格型 TD 里一般取 0.2 到 0.5（中庸之道）；如果用神经网络函数近似，学习率要小得多，通常在 1e-4 到 1e-3 量级</p>
-<p>因此，只有$r_t$是真实发生的，$V(s_{t+1})$是一个不准确的估计值，导致最后的TD target是一个有偏的估计，但是优点是方差低</p>
+<p><span class="math">\(\gamma\)</span>：折扣因子，控制未来奖励的重要程度，大部分设置为0.95，越小则重视当下，越大则注重未来</p>
+<p><span class="math">\(V(s_{t+1})\)</span>：下一状态的价值估计</p>
+<p><span class="math">\(\alpha\)</span>：学习率，控制每次更新的幅度，如果学习率过大，那么当你看见一个球队有一点优势，你就会直接变脸（墙头草），相反，学习率太小则只注重历史（经验主义），在表格型 TD 里一般取 0.2 到 0.5（中庸之道）；如果用神经网络函数近似，学习率要小得多，通常在 1e-4 到 1e-3 量级</p>
+<p>因此，只有<span class="math">\(r_t\)</span>是真实发生的，<span class="math">\(V(s_{t+1})\)</span>是一个不准确的估计值，导致最后的TD target是一个有偏的估计，但是优点是方差低</p>
 <h1 id="_7">马尔可夫</h1>
 <p>所有的问题在判断能不能使用强化学习前，先判断其能不能当作成一个马尔可夫过程......</p>
 <h2 id="markov-process">Markov Process定义</h2>
@@ -143,7 +149,7 @@ a:hover{text-decoration:underline}
 <p>其实你仔细想一想，如果说你想预测一件事，最好是了解过去，结合现在，预测将来</p>
 <p>但是现在你是神探夏洛特！<strong>你只需要细致的去观察犯人当前的状态，就可以去预测他下一步的走向</strong></p>
 <p>数学公式表示：</p>
-<p>$$\boxed{ P(S_{t+1}\mid S_t,S_{t-1},\ldots,S_0) =P(S_{t+1}\mid S_t) }$$</p>
+<div class="math-display">\[\boxed{ P(S_{t+1}\mid S_t,S_{t-1},\ldots,S_0) =P(S_{t+1}\mid S_t) }\]</div>
 <p>左边表示：已知从开始到现在的全部历史，预测下一状态的概率。</p>
 <p>右边表示：只知道当前状态，预测下一状态的概率。</p>
 <p>两者相等，就是马尔可夫性质</p>
@@ -154,20 +160,20 @@ a:hover{text-decoration:underline}
 </blockquote>
 <p>满足马尔可夫性质的同时满足随机过程</p>
 <p>在有限的状态集合S（state space）执行P（state transition probability Matrix）</p>
-<p>$$p_{ij}=\Pr(X_{t+1}=j\mid X_t=i),\quad i,j\in S$$</p>
+<div class="math-display">\[p_{ij}=\Pr(X_{t+1}=j\mid X_t=i),\quad i,j\in S\]</div>
 <p>这也很简单，i,j状态都属于S状态集合(有限)，在当前状态是i的情况下，下一步转移到状态j的概率是多少，将所有的概率写在一个矩阵中：</p>
-<p>$$P=(p_{ij})<em>{N\times N}=\begin{bmatrix}p</em>{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} \p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} \\vdots &amp; \vdots &amp; \ddots &amp; \vdots \p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}\end{bmatrix}$$</p>
+<div class="math-display">\[P=(p_{ij})_{N\times N}=\begin{bmatrix}p_{11} &amp; p_{12} &amp; \cdots &amp; p_{1N} \\p_{21} &amp; p_{22} &amp; \cdots &amp; p_{2N} \\\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\p_{N1} &amp; p_{N2} &amp; \cdots &amp; p_{NN}\end{bmatrix}\]</div>
 <p>二元组表示：（S ，P）</p>
 <h2 id="markov-processmdp">Markov Process决策（MDP）</h2>
-<p><strong>MDP = 马尔可夫链 + 动作 + 奖励 + 折扣</strong>，而这个奖励和动作就是之前提到的R和$a\sim\pi(a\mid s)$</p>
-<p>上面提到的$a\sim\pi(a\mid s)$，注意与现在的<em>P</em>(<em>s</em>′∣<em>s</em>,<em>a</em>)做区分：</p>
+<p><strong>MDP = 马尔可夫链 + 动作 + 奖励 + 折扣</strong>，而这个奖励和动作就是之前提到的R和<span class="math">\(a\sim\pi(a\mid s)\)</span></p>
+<p>上面提到的<span class="math">\(a\sim\pi(a\mid s)\)</span>，注意与现在的<em>P</em>(<em>s</em>′∣<em>s</em>,<em>a</em>)做区分：</p>
 <p>第一个是在当前状态下执行a动作的概率，属于你定义智能体的决策</p>
 <p>第二个则是描述当前系统的规则，在S状态下执行动作a，到底能不能转移到下一个状态S1。就好比给狗一个前向的力，但是由于仿真器会模拟现实的误差，每次的结束位置不一定一样，会有微小差异</p>
 <p>奖励R则是你自己定义的，对智能体当前的状态进行奖励，以及对动作进行奖励（动作幅度越小越好）。奖励这个东西在强化学习中很重要，因为你不会教智能体怎么走路，你只会告诉他到达目标就给奖励，就好比我告诉你好好学习能拿到offer，但是没有告诉你怎么学，最终你靠不断的尝试赢得了offer，所以奖励是引导智能体动作的重要参数</p>
 <h2 id="vs">无模型学习vs有模型规划</h2>
 <p>有人会有问题：如果我想训练一个机械狗，那么这个矩阵状态那么多，时间轴那么长，这个矩阵不是爆炸了吗？你的问题很好，所以训练的时候，仿真器会根据控制给出随机的状态转移<em>P</em>(<em>s</em>′∣<em>s</em>,<em>a</em>)，<strong>压根不会用到状态转移矩阵</strong></p>
 <p>标题是有模型规划，则描述系统的规则是定死的：你会发现我们可以<strong>直接算出在当前策略 π 下的价值函数</strong>：</p>
-<p>$$V^\pi(s)=\sum_a \pi(a\mid s)\sum_{s^\prime}P(s^\prime\mid s,a)\left[R(s,a,s^\prime)+\gamma V^\pi(s^\prime)\right]$$</p>
+<div class="math-display">\[V^\pi(s)=\sum_a \pi(a\mid s)\sum_{s^\prime}P(s^\prime\mid s,a)\left[R(s,a,s^\prime)+\gamma V^\pi(s^\prime)\right]\]</div>
 <p>无模型学习，学习这两个字体现在：agent需要在当前系统去不断的训练，最终训练出的策略 π，学习到了适用于当前系统的规则，<strong>无模型只能通过 MC 或 TD 边采样边估计价值/策略</strong></p>
 <blockquote>
 <p>🍞  简单习题：看看你是否学会，如果有不会的，最好再重温本章节
@@ -185,8 +191,8 @@ a:hover{text-decoration:underline}
 <p>前面各位已经对策略 π 有一个基本的认知，这一节对其进行详细的说明</p>
 </blockquote>
 <p>其实就是agent的行为方式，定义了在特定状态下选择动作的规则：</p>
-<p>$$π(a∣s)=Pr(at=a∣st=s)$$</p>
-<p>$$\sum_{a\in A}\pi(a\mid s)=1,\quad \pi(a\mid s)\ge 0$$</p>
+<div class="math-display">\[π(a∣s)=Pr(at=a∣st=s)\]</div>
+<div class="math-display">\[\sum_{a\in A}\pi(a\mid s)=1,\quad \pi(a\mid s)\ge 0\]</div>
 <p>确定性策略，在任意一个状态s属于S集合，策略 π 会给出一个确定的动作，还是拿迷宫来举例：</p>
 <p>P(向前走 | 前面有一条路的时候) = 1</p>
 <p>P(向后走 | 走进死胡同) = 1</p>
@@ -197,18 +203,18 @@ a:hover{text-decoration:underline}
 <p><em>状态价值函数：Vπ</em>(<em>s</em>)：站在状态 s，按策略 π 继续走，<strong>平均能拿多少总回报</strong></p>
 <p><em>动作价值函数</em>：Qπ(s,a)：站在状态 s，<strong>先强制做动作</strong> a，之后按策略 π 走，平均能拿多少总回报</p>
 <p>其实你会发现这两个的区别就是多了一个强制动作a,但是这个a却让他们两个有很大的不同</p>
-<p>$$G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \cdots = \sum_{k=0}^{\infty} \gamma^k r_{t+k}$$</p>
+<div class="math-display">\[G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \cdots = \sum_{k=0}^{\infty} \gamma^k r_{t+k}\]</div>
 <p><strong>折扣回报</strong>G等于当前步奖励与缩放因子(权重)乘后续步的奖励之和，<strong>这个就是用上面的MC和TD估计的</strong></p>
 <p><strong>状态价值函数V：</strong></p>
-<p>$$Vπ(s)=Eπ[Gt∣st=s]$$</p>
+<div class="math-display">\[Vπ(s)=Eπ[Gt∣st=s]\]</div>
 <p><strong>动作价值函数Q：</strong></p>
-<p>$$Qπ(s,a)=Eπ[Gt∣st=s,at=a]$$</p>
+<div class="math-display">\[Qπ(s,a)=Eπ[Gt∣st=s,at=a]\]</div>
 <p>这两者是可以相互转换的，一句话就能理解：状态价值 = 按策略选动作后，动作价值的加权平均</p>
-<p>$$V^\pi(s)=\sum_a \pi(a\mid s)Q^\pi(s,a)$$</p>
+<div class="math-display">\[V^\pi(s)=\sum_a \pi(a\mid s)Q^\pi(s,a)\]</div>
 <p>那么很显然，求最优策略就是对这两个价值函数求最优，也就是求这两个玩意的MAX：</p>
-<p>$$V^<em>(s)=\max_a\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma V^</em>(s')\right]$$</p>
+<div class="math-display">\[V^*(s)=\max_a\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma V^*(s')\right]\]</div>
 <p>直接计算期望</p>
-<p>$$Q^<em>(s,a)=\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma\max_{a'}Q^</em>(s',a')\right]$$</p>
+<div class="math-display">\[Q^*(s,a)=\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma\max_{a'}Q^*(s',a')\right]\]</div>
 <p>通过迭代，到下一状态再计算期望</p>
 <p>为什么一定有最优解？因为贝尔曼最优算子是一个压缩映射（γ&lt;1 时是 γ-压缩），由巴拿赫不动点定理，它存在唯一的不动点，也就是唯一的最优价值函数。动作是 one-hot 只说明同一时刻只能选一个动作，并不是最优解存在的理由。</p>
 <p>最后你会发现，为什么我说 V 和 Q 有很大的不同：在有模型（已知 P 和 R）的情况下，可以直接对状态价值 V 做规划；而在无模型的情况下，因为不知道 P，更常用采样学到的动作价值 Q（例如 Q-learning）。</p>
@@ -269,14 +275,14 @@ a:hover{text-decoration:underline}
 </table>
 <h2 id="td-learning">TD-learning算法估计价值函数</h2>
 <p><strong>TD-target</strong></p>
-<p>$$\boxed{y_t=R_{t+1}+\gamma V(S_{t+1})}$$</p>
+<div class="math-display">\[\boxed{y_t=R_{t+1}+\gamma V(S_{t+1})}\]</div>
 <p><strong>TD Error</strong></p>
-<p>$$\boxed{\delta_t=y_t-V(S_t)}$$</p>
+<div class="math-display">\[\boxed{\delta_t=y_t-V(S_t)}\]</div>
 <p>代入：</p>
-<p>$$\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)$$</p>
+<div class="math-display">\[\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)\]</div>
 <p><strong>TD 更新状态/动作价值：</strong></p>
-<p>$$\boxed{V(S_t)\leftarrow V(S_t)+\alpha\left[R_{t+1}+\gamma V(S_{t+1})-V(S_t)\right]}$$</p>
-<p>$$Q(S_t,A_t)\leftarrow Q(S_t,A_t)+ \alpha\left[ R_{t+1}+\gamma Q(S_{t+1},A_{t+1}) -Q(S_t,A_t) \right]$$</p>
+<div class="math-display">\[\boxed{V(S_t)\leftarrow V(S_t)+\alpha\left[R_{t+1}+\gamma V(S_{t+1})-V(S_t)\right]}\]</div>
+<div class="math-display">\[Q(S_t,A_t)\leftarrow Q(S_t,A_t)+ \alpha\left[ R_{t+1}+\gamma Q(S_{t+1},A_{t+1}) -Q(S_t,A_t) \right]\]</div>
 <p>你会发现也很好理解，就是通过不断的迭代逼近真实的价值，同时不断地提高自己预测的正确率，<strong>注意当episode结束的时候，V(St)不会消失，就和神经网络的其他参数一样，仍然会保留用于之后的训练</strong></p>
 <blockquote>
 <p>⚽  习题，答不上来滚出去
@@ -288,18 +294,18 @@ a:hover{text-decoration:underline}
 <h1 id="_12">贝尔曼方程</h1>
 <h2 id="_13">贝尔曼最优方程与贝尔曼期望方程的区别</h2>
 <p>刚才的期望方程是在<strong>策略已经给定</strong>的情况下计算价值。但强化学习最终往往想找到最好的策略。那就不再对策略选出的动作求平均(也就是前面的价值函数用期望来计算)，而是挑选价值最高的动作：</p>
-<p>$$\boxed{V^<em>(s)=\max_a\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma V^</em>(s')\right]}$$</p>
+<div class="math-display">\[\boxed{V^*(s)=\max_a\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma V^*(s')\right]}\]</div>
 <p>这就是<strong>贝尔曼最优方程</strong>。它说：最优状态价值，等于在当前状态选择最好的动作后，能够得到的期望回报</p>
 <p>动作价值对应的形式是：</p>
-<p>$$\boxed{Q^<em>(s,a)=\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma\max_{a'}Q^</em>(s',a')\right]}$$</p>
+<div class="math-display">\[\boxed{Q^*(s,a)=\sum_{s'}P(s'\mid s,a)\left[R(s,a,s')+\gamma\max_{a'}Q^*(s',a')\right]}\]</div>
 <p>这里要注意，<strong>当前的动作 a 已经固定，所以外面没有对 a 取最大值；走到下一状态后，才对下一步动作 a' 取最大值</strong></p>
 <p>有了最优动作价值函数后，最优策略就很直观了：</p>
-<p>$$\pi^<em>(s)=\arg\max_a Q^</em>(s,a)$$</p>
+<div class="math-display">\[\pi^*(s)=\arg\max_a Q^*(s,a)\]</div>
 <p>也就是说，在每个状态选择 Q^*(s,a) 最大的动作。</p>
 <h2 id="td">和 TD 的关系</h2>
 <p>贝尔曼方程描述的是价值函数应当满足的关系；TD-learning 则拿采样到的一步经验，逐渐把当前的价值估计往这个关系上推：</p>
-<p>$$V(S_t)\leftarrow V(S_t)+\alpha\left[R_{t+1}+\gamma V(S_{t+1})-V(S_t)\right]$$</p>
-<p>方括号里的部分就是 TD Error。把 V(S_t) 往 $ R_{t+1}+\gamma V(S_{t+1})$ 的方向更新，正是在用采样到的一步奖励和下一状态的价值，逼近贝尔曼期望方程</p>
+<div class="math-display">\[V(S_t)\leftarrow V(S_t)+\alpha\left[R_{t+1}+\gamma V(S_{t+1})-V(S_t)\right]\]</div>
+<p>方括号里的部分就是 TD Error。把 V(S_t) 往 <span class="math">\(R_{t+1}+\gamma V(S_{t+1})\)</span> 的方向更新，正是在用采样到的一步奖励和下一状态的价值，逼近贝尔曼期望方程</p>
 <p>如果知道环境的转移概率和奖励，就可以直接用贝尔曼方程计算或迭代价值，这属于有模型的规划。如果不知道这些规律，就可以通过与环境交互采样，再用 TD 等方法学习价值，这属于无模型学习</p>
 <p>当下一状态是终止状态时，不再有未来回报，通常把终止状态之后的价值看作 0，因此 TD target 就只有这一步的奖励</p>
 <blockquote>
@@ -307,27 +313,27 @@ a:hover{text-decoration:underline}
 1. 贝尔曼方程为什么可以把一整串未来奖励拆成当前奖励和下一状态价值？
 2. 贝尔曼期望方程和贝尔曼最优方程有什么区别？
 3. 在动作价值的贝尔曼最优方程里，为什么对下一步动作 a' 取最大值？
-4. 如果下一状态是终止状态，TD target 还需要加上 $gamma V(S_{t+1}) $吗？</p>
+4. 如果下一状态是终止状态，TD target 还需要加上 <span class="math">\(gamma V(S_{t+1})\)</span>吗？</p>
 </blockquote>
 <h1 id="gae">GAE（广义优势估计）</h1>
 <p>前面已经讲过状态价值函数 V(s) 和动作价值函数 Q(s,a)。不过训练策略时，光知道某个动作的总回报还不够，我们更想知道：<strong>这个动作比当前策略在这个状态下的平均表现好多少？</strong></p>
 <p>这就引出了<strong>优势函数</strong>：</p>
-<p>$$\boxed{A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)}$$</p>
-<p>如果 $A^\pi(s,a)&gt;0$，说明这个动作比当前策略在状态 s 下的平均表现更好；如果 $A^\pi(s,a)&lt;0$，说明它比平均表现差。策略优化时就可以鼓励优势为正的动作，减少优势为负的动作</p>
+<div class="math-display">\[\boxed{A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)}\]</div>
+<p>如果 <span class="math">\(A^\pi(s,a)&gt;0\)</span>，说明这个动作比当前策略在状态 s 下的平均表现更好；如果 <span class="math">\(A^\pi(s,a)&lt;0\)</span>，说明它比平均表现差。策略优化时就可以鼓励优势为正的动作，减少优势为负的动作</p>
 <h2 id="td-error">从 TD Error 得到优势估计</h2>
 <p>我们通常不知道真实的 V 和 Q，所以要用当前价值网络的估计来计算优势。一步 TD Error 是：</p>
-<p>$$\boxed{\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)}$$</p>
+<div class="math-display">\[\boxed{\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)}\]</div>
 <p>它可以看作一步的优势估计：实际拿到的奖励加上下一状态的估计价值，如果高于当前状态的估计价值，\delta_t 就是正的；反之就是负的</p>
 <p>但只看一步会比较依赖价值函数的估计。我们也可以把后面几步的 TD Error 一起加起来：</p>
-<p>$$\hat A_t^{(1)}=\delta_t$$</p>
-<p>$$\hat A_t^{(2)}=\delta_t+\gamma\delta_{t+1}$$</p>
-<p>$$\hat A_t^{(3)}=\delta_t+\gamma\delta_{t+1}+\gamma^2\delta_{t+2}$$</p>
+<div class="math-display">\[\hat A_t^{(1)}=\delta_t\]</div>
+<div class="math-display">\[\hat A_t^{(2)}=\delta_t+\gamma\delta_{t+1}\]</div>
+<div class="math-display">\[\hat A_t^{(3)}=\delta_t+\gamma\delta_{t+1}+\gamma^2\delta_{t+2}\]</div>
 <p>步数越多，利用到的真实奖励越多，但估计的方差通常也会增加。于是就有了一个问题：究竟应该看几步？</p>
 <h2 id="gae_1">GAE 的核心公式</h2>
 <p>GAE（Generalized Advantage Estimation，广义优势估计）不只选一个固定步数，而是把不同长度的 TD Error 累加结果按权重组合起来：</p>
-<p>$$\boxed{\hat A_t^{\mathrm{GAE}(\gamma,\lambda)}=\sum_{l=0}^{\infty}(\gamma\lambda)^l\delta_{t+l}}$$</p>
+<div class="math-display">\[\boxed{\hat A_t^{\mathrm{GAE}(\gamma,\lambda)}=\sum_{l=0}^{\infty}(\gamma\lambda)^l\delta_{t+l}}\]</div>
 <p>实际训练一条有限长度的轨迹时，只会加到轨迹结束或采样片段结束的位置：</p>
-<p>$$\boxed{\hat A_t=\delta_t+(\gamma\lambda)\delta_{t+1}+(\gamma\lambda)^2\delta_{t+2}+\cdots}$$</p>
+<div class="math-display">\[\boxed{\hat A_t=\delta_t+(\gamma\lambda)\delta_{t+1}+(\gamma\lambda)^2\delta_{t+2}+\cdots}\]</div>
 <p>这里的 lambda 是 GAE 用来控制加权方式的参数，范围通常在 [0,1]。它和折扣因子 gamma 不一样：gamma 控制未来奖励折扣多少，lambda 控制后续 TD Error 在优势估计中保留多少</p>
 <ul>
 <li>当 lambda=0 时，只有第一项留下来，hat A_t=delta_t，就是一步 TD 优势估计。它更多依赖价值函数估计，方差较低，但偏差可能较大</li>
@@ -336,7 +342,7 @@ a:hover{text-decoration:underline}
 <p>所以 lambda 要在偏差和方差之间做折中，很多 PPO 实现会使用接近 0.95 的值作为起点，但合适的取值取决于任务和实现</p>
 <h2 id="_14">实际计算方式</h2>
 <p>上面的求和可以从轨迹末尾往前递推计算，这是 PPO 实现里最常见的高效做法：</p>
-<p>$$\boxed{\hat A_t=\delta_t+\gamma\lambda\hat A_{t+1}}$$</p>
+<div class="math-display">\[\boxed{\hat A_t=\delta_t+\gamma\lambda\hat A_{t+1}}\]</div>
 <p>边界问题：如果 S_{t+1} 是真正的终止状态，就没有未来价值，计算 TD Error 时不应把终止后的价值算进去；递推到终止边界时，后续优势也设为 0</p>
 <p><strong>如果只是采样片段结束，但环境中的 episode 实际还没结束，则通常仍使用最后一个状态的价值估计作为 bootstrap</strong>，也就是保留 gamma V(S_{t+1})。这两种边界不能混为一谈：真正结束代表未来回报归零，片段截断则只是暂时没有更多采样数据，这个设计在工程中会有具体的参数：</p>
 <p><code>terminated</code>：任务真正终止，例如四足机器人摔倒，或者完成任务</p>
@@ -376,10 +382,10 @@ a:hover{text-decoration:underline}
 <p>如果只使用 Critic，又只能学习价值函数，并不会直接告诉智能体应该选择哪个动作</p>
 <p>Actor-Critic 就是让两者互相配合：Critic 学习价值函数，Actor 利用 Critic 的评价更新策略。这样既保留了策略方法处理连续动作和随机策略的能力，又可以利用价值估计减少更新的波动。</p>
 <h2 id="actor">Actor：负责选择动作</h2>
-<p>Actor 本质上就是前面讲过的策略 $\pi$，只不过现在用一个参数为 $\theta$ 的神经网络来表示它：</p>
-<p>$$\pi_\theta(a\mid s)$$</p>
+<p>Actor 本质上就是前面讲过的策略 <span class="math">\(\pi\)</span>，只不过现在用一个参数为 <span class="math">\(\theta\)</span> 的神经网络来表示它：</p>
+<div class="math-display">\[\pi_\theta(a\mid s)\]</div>
 <p>给定状态 s 后，Actor 输出动作的概率分布。离散动作时，它可以输出每个动作的概率；连续动作时，它通常输出一个高斯分布的均值和方差，再从这个分布中采样动作：</p>
-<p>$$a_t\sim\pi_\theta(\cdot\mid s_t)$$</p>
+<div class="math-display">\[a_t\sim\pi_\theta(\cdot\mid s_t)\]</div>
 <p>注意 Actor 通常输出一个动作分布。训练初期，这个分布可能比较随机；随着训练进行，表现更好的动作概率会逐渐提高</p>
 <p>策略更新的直觉是：</p>
 <ul>
@@ -389,39 +395,39 @@ a:hover{text-decoration:underline}
 <p>这个比预期好多少，就是优势函数 A(s,a)</p>
 <h2 id="critic">Critic：负责评价状态</h2>
 <p>Critic 通常用另一个神经网络表示状态价值函数：</p>
-<p>$$V_\phi(s)$$</p>
+<div class="math-display">\[V_\phi(s)\]</div>
 <p>它的输入是当前状态，输出是从这个状态出发、继续按照当前策略行动时，未来能够获得的期望回报。</p>
 <p>比如在迷宫中：</p>
 <ul>
-<li>站在离出口很近的状态，$V_\phi(s)$应该比较大</li>
-<li>站在死胡同附近的状态，$V_\phi(s)$ 应该比较小</li>
+<li>站在离出口很近的状态，<span class="math">\(V_\phi(s)\)</span>应该比较大</li>
+<li>站在死胡同附近的状态，<span class="math">\(V_\phi(s)\)</span> 应该比较小</li>
 </ul>
 <p>Critic 并不是直接告诉 Actor “你必须向左走”，而是先估计当前状态的价值，再通过实际奖励和后续状态价值计算这次行动的表现：</p>
-<p>$$\delta_t=R_{t+1}+\gamma V_\phi(S_{t+1})-V_\phi(S_t)$$</p>
-<p>如果 $\delta_t&gt;0$，说明这一步的结果比 Critic 原来预期的更好；如果$\delta_t&lt;0$，说明结果比预期更差</p>
+<div class="math-display">\[\delta_t=R_{t+1}+\gamma V_\phi(S_{t+1})-V_\phi(S_t)\]</div>
+<p>如果 <span class="math">\(\delta_t&gt;0\)</span>，说明这一步的结果比 Critic 原来预期的更好；如果<span class="math">\(\delta_t&lt;0\)</span>，说明结果比预期更差</p>
 <p>这个 TD Error 就可以作为最简单的优势估计：</p>
-<p>$$\hat A_t\approx\delta_t$$</p>
+<div class="math-display">\[\hat A_t\approx\delta_t\]</div>
 <p>前面讲到的 GAE，则是把多个时间步的 TD Error 组合起来，得到更稳定的优势估计：</p>
-<p>$$\hat A_t^{\mathrm{GAE}}=\sum_{l=0}^{\infty}(\gamma\lambda)^l\delta_{t+l}$$</p>
+<div class="math-display">\[\hat A_t^{\mathrm{GAE}}=\sum_{l=0}^{\infty}(\gamma\lambda)^l\delta_{t+l}\]</div>
 <p>所以 GAE 不是额外的一张网络，而是 Critic 提供价值估计之后，用来计算优势的一种方法</p>
 <h2 id="actor_1">Actor 怎么更新</h2>
 <p>策略梯度的一个常见形式是：</p>
-<p>$$\boxed{\nabla_\theta J(\theta)=\mathbb{E}<em>t\left[\nabla</em>\theta\log\pi_\theta(a_t\mid s_t)\hat A_t\right]}$$</p>
+<div class="math-display">\[\boxed{\nabla_\theta J(\theta)=\mathbb{E}_t\left[\nabla_\theta\log\pi_\theta(a_t\mid s_t)\hat A_t\right]}\]</div>
 <p>这个公式可以先不急着推导，先理解它的方向：</p>
 <ul>
-<li>$\log\pi_\theta(a_t\mid s_t)$ 表示 Actor 对这次动作有多认可</li>
-<li>$\hat A_t$表示这次动作相对于平均水平好多少</li>
-<li>当$\hat A_t&gt;0$ 时，梯度会让这个动作的概率变大</li>
-<li>当 $\hat A_t&lt;0$ 时，梯度会让这个动作的概率变小</li>
+<li><span class="math">\(\log\pi_\theta(a_t\mid s_t)\)</span> 表示 Actor 对这次动作有多认可</li>
+<li><span class="math">\(\hat A_t\)</span>表示这次动作相对于平均水平好多少</li>
+<li>当<span class="math">\(\hat A_t&gt;0\)</span> 时，梯度会让这个动作的概率变大</li>
+<li>当 <span class="math">\(\hat A_t&lt;0\)</span> 时，梯度会让这个动作的概率变小</li>
 </ul>
 <p>在代码中，通常会最小化负的策略目标，因此经常看到类似下面的损失loss：</p>
-<p>$$L_{\text{actor}}=-\mathbb{E}<em>t\left[\log\pi</em>\theta(a_t\mid s_t)\hat A_t\right]$$</p>
+<div class="math-display">\[L_{\text{actor}}=-\mathbb{E}_t\left[\log\pi_\theta(a_t\mid s_t)\hat A_t\right]\]</div>
 <p>这里的负号只是因为深度学习框架通常默认做梯度下降，而我们希望最大化策略目标</p>
 <h2 id="critic_1">Critic 怎么更新</h2>
 <p>Critic 的任务是让价值预测接近实际的回报目标。最简单的目标可以使用一步 TD target：</p>
-<p>$$y_t=r_{t+1}+\gamma V_\phi(s_{t+1})$$</p>
+<div class="math-display">\[y_t=r_{t+1}+\gamma V_\phi(s_{t+1})\]</div>
 <p>然后最小化预测值和目标值之间的均方误差：</p>
-<p>$$\boxed{L_{\text{critic}}=\mathbb{E}<em>t\left[(V</em>\phi(s_t)-y_t)^2\right]}$$</p>
+<div class="math-display">\[\boxed{L_{\text{critic}}=\mathbb{E}_t\left[(V_\phi(s_t)-y_t)^2\right]}\]</div>
 <p>也可以使用完整回报或 GAE 配套的回报目标训练 Critic。不同实现的细节可能不同，但核心目标不变：<strong>让 Critic 的价值估计越来越接近真实的期望回报</strong></p>
 <h2 id="actor-critic_1">Actor-Critic 的优点和问题</h2>
 <p>Actor-Critic 相比只使用蒙特卡洛策略梯度，优点是可以使用 TD 和价值函数进行更及时的更新，通常方差更低，样本利用也更有效</p>
@@ -439,32 +445,32 @@ a:hover{text-decoration:underline}
 <p>所以 PPO 的想法是：<strong>优势告诉我往哪个方向改，裁剪目标则让过头的改动不再继续获得好处</strong></p>
 <h2 id="_17">先分清旧策略和新策略</h2>
 <p>PPO 每一轮先用一个固定的策略收集数据，把这个策略记为：</p>
-<p>$$\pi_{\theta_{\text{old}}}(a\mid s)$$</p>
+<div class="math-display">\[\pi_{\theta_{\text{old}}}(a\mid s)\]</div>
 <p>这就是<strong>旧策略</strong>，也是实际产生这批动作的策略。接着，我们拿这批数据更新 Actor，正在优化的策略记为：</p>
-<p>$$\pi_\theta(a\mid s)$$</p>
+<div class="math-display">\[\pi_\theta(a\mid s)\]</div>
 <p>这里的新旧，不是两种不同的算法，而是同一个 Actor 在不同参数下的策略</p>
 <p>刚开始更新时，新旧参数相同；更新几次以后，新策略就逐渐和旧策略产生差别。<strong>在这一批数据的多次更新期间，旧策略的概率必须保持不变，不能跟着新策略一起改</strong></p>
 <p>实际实现时，不一定非要保留另一张完整的旧网络。采样时把动作在旧策略下的对数概率保存下来，就能用于后续计算</p>
 <h2 id="_18">用概率比衡量变化</h2>
 <p>对于采样时实际做出的动作 a_t，PPO 比较它在新旧策略下的概率：</p>
-<p>$$\boxed{\rho_t(\theta)=\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\theta_{\text{old}}}(a_t\mid s_t)}}$$</p>
-<p>有些资料把这个比率写成 $r_t(\theta)$。这里使用 $\rho_t$，避免和环境奖励 r_t 混淆</p>
+<div class="math-display">\[\boxed{\rho_t(\theta)=\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\theta_{\text{old}}}(a_t\mid s_t)}}\]</div>
+<p>有些资料把这个比率写成 <span class="math">\(r_t(\theta)\)</span>。这里使用 <span class="math">\(\rho_t\)</span>，避免和环境奖励 r_t 混淆</p>
 <p>假设旧策略在这个路口向左走的概率是 0.2：</p>
 <ul>
-<li>新策略的概率还是 0.2，那么 $\rho_t=1$，没有变化</li>
-<li>新策略的概率变成 0.3，那么$\rho_t=1.5$，相对提高了$50\%$</li>
-<li>新策略的概率变成 0.1，那么 $\rho_t=0.5$，相对降低了 $50\%$</li>
+<li>新策略的概率还是 0.2，那么 <span class="math">\(\rho_t=1\)</span>，没有变化</li>
+<li>新策略的概率变成 0.3，那么<span class="math">\(\rho_t=1.5\)</span>，相对提高了<span class="math">\(50\%\)</span></li>
+<li>新策略的概率变成 0.1，那么 <span class="math">\(\rho_t=0.5\)</span>，相对降低了 <span class="math">\(50\%\)</span></li>
 </ul>
 <p>这里比较的是<strong>同一个状态下、同一个已采样动作</strong>的概率，不是在比较两个不同动作</p>
 <p>连续动作也能使用这个公式，不过此时比较的是动作的<strong>概率密度</strong>，不是选中某个精确数值的概率。多维动作通常计算整个动作向量的联合对数概率</p>
 <p>为了计算方便，代码中经常使用：</p>
-<p>$$\rho_t(\theta)=\exp\left[\log\pi_\theta(a_t\mid s_t)-\log\pi_{\theta_{\text{old}}}(a_t\mid s_t)\right]$$</p>
+<div class="math-display">\[\rho_t(\theta)=\exp\left[\log\pi_\theta(a_t\mid s_t)-\log\pi_{\theta_{\text{old}}}(a_t\mid s_t)\right]\]</div>
 <h2 id="ppo_2">PPO 的核心：裁剪目标</h2>
-<p>引入一个裁剪参数$\epsilon$，例如 $\epsilon=0.2$，那么裁剪区间就是：</p>
-<p>$$[1-\epsilon,1+\epsilon]=[0.8,1.2]$$</p>
+<p>引入一个裁剪参数<span class="math">\(\epsilon\)</span>，例如 <span class="math">\(\epsilon=0.2\)</span>，那么裁剪区间就是：</p>
+<div class="math-display">\[[1-\epsilon,1+\epsilon]=[0.8,1.2]\]</div>
 <p>裁剪函数的意思也很简单：低于 0.8 就按 0.8 算，高于 1.2 就按 1.2 算，中间的值保持不变</p>
 <p>PPO-Clip 的核心目标是：</p>
-<p>$$\boxed{L^{\mathrm{CLIP}}(\theta)=\mathbb{E}_t\left[\min\left(\rho_t(\theta)\hat A_t,\operatorname{clip}(\rho_t(\theta),1-\epsilon,1+\epsilon)\hat A_t\right)\right]}$$</p>
+<div class="math-display">\[\boxed{L^{\mathrm{CLIP}}(\theta)=\mathbb{E}_t\left[\min\left(\rho_t(\theta)\hat A_t,\operatorname{clip}(\rho_t(\theta),1-\epsilon,1+\epsilon)\hat A_t\right)\right]}\]</div>
 <p>这个公式其实是在比较两项：</p>
 <ol>
 <li>不裁剪，直接用新旧概率比乘优势</li>
@@ -475,8 +481,8 @@ a:hover{text-decoration:underline}
 <p>到这里，就可以把前面的知识串起来了：</p>
 <ol>
 <li><strong>采样</strong>：用当前 Actor 与环境交互，收集一批状态、动作、奖励、终止标记，同时保存旧动作对数概率和 Critic 的价值估计。这一轮采样策略就叫旧策略</li>
-<li><strong>计算优势</strong>：根据奖励和旧价值估计计算 TD Error，再用 GAE 从后往前计算 $\hat A_t$。真正终止时不保留后续价值，单纯采样截断时则需要 bootstrap</li>
-<li><strong>计算回报目标</strong>：用未标准化优势加旧状态价值，得到训练 Critic 的 $\hat R_t$</li>
+<li><strong>计算优势</strong>：根据奖励和旧价值估计计算 TD Error，再用 GAE 从后往前计算 <span class="math">\(\hat A_t\)</span>。真正终止时不保留后续价值，单纯采样截断时则需要 bootstrap</li>
+<li><strong>计算回报目标</strong>：用未标准化优势加旧状态价值，得到训练 Critic 的 <span class="math">\(\hat R_t\)</span></li>
 <li><strong>准备 Actor 的优势</strong>：常见做法是另外对优势做标准化，供策略更新使用，不要把标准化后的优势再拿去构造回报目标</li>
 <li><strong>分批更新</strong>：把这批数据打乱，分成小批次。重新计算新策略下同一批动作的对数概率，得到概率比，再更新 Actor 和 Critic</li>
 <li><strong>重复若干轮</strong>：在固定旧概率、优势和回报目标的情况下，对这批数据训练若干个 epoch。epoch 就是把这批数据完整训练一遍</li>
@@ -490,7 +496,7 @@ a:hover{text-decoration:underline}
 2. critic预测价值，更新的方式是什么？
 3. PPO 中的旧策略为什么在一轮更新期间不能跟着新策略一起改变？
 4. 旧概率是 0.4，新概率是 0.5，概率比是多少？
-5. 当优势为正时，概率比超过 $1+\epsilon$ 后，继续增大它还能提高这个样本的裁剪目标吗？
+5. 当优势为正时，概率比超过 <span class="math">\(1+\epsilon\)</span> 后，继续增大它还能提高这个样本的裁剪目标吗？
 6. 当优势为负时，为什么取 min 会限制概率比被过度提高？
 7. PPO 的 clip 是否保证所有概率比都留在裁剪区间内？为什么？
 8. 训练 Critic 的回报目标，为什么要用未标准化的优势来构造？</p>

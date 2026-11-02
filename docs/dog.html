@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>机器狗算法扫盲 · GOW 战队</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']});"></script>
 <style>
 :root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
 @media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
@@ -34,6 +38,8 @@ a:hover{text-decoration:underline}
 .toc ul{margin:0;padding-left:18px}
 .toc>ul{padding-left:0;list-style:none}
 .toc li{margin:4px 0}
+.math-display{overflow-x:auto;overflow-y:hidden;margin:20px 0;text-align:center}
+.katex{font-size:1.05em}
 .foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -122,8 +128,8 @@ a:hover{text-decoration:underline}
 <h2 id="12ik">12.运动学逆解IK</h2>
 <p>已知足端目标位置，反求对应的各关节角度，在机器狗中的原理很简单，以并联狗（8自由度）为例，从机体到足端构建一个平行四边形，你会发现当长和宽（对应大腿和小腿的长度）确定，平行四边形两个夹角（对应大腿和小腿对应的角度）确定，可以确定一个唯一的平行四边形（对应机体点的对角便是足端）。在此基础上再加上髋侧摆关节（12自由度），便可以确定在一个三维坐标系下的运动学解算</p>
 <h2 id="13">13.数学公式</h2>
-<p>$$x=L_1\cos(q_1)+L_2\cos(q_1+q_2)$$</p>
-<p>$$z=L_1\sin(q_1)+L_2\sin(q_1+q_2)$$</p>
+<div class="math-display">\[x=L_1\cos(q_1)+L_2\cos(q_1+q_2)\]</div>
+<div class="math-display">\[z=L_1\sin(q_1)+L_2\sin(q_1+q_2)\]</div>
 <p>三轴的很简单，但是如果放在多轴机械臂上就不一样了https://zhuanlan.zhihu.com/p/2013932577543718346</p>
 <h2 id="14">14.绝对位置和相对位置</h2>
 <p>电机有<strong><em>编码器</em></strong>，可以输出当前转动的角度，大部分编码器都是<strong><em>绝对编码</em></strong>，所以一般情况下代码输出的是<strong><em>绝对位置</em></strong>，有人会有疑问，为什么我的代码不能直接输出相对位置呢？</p>
@@ -152,23 +158,23 @@ cmd.tau  = 0.0
 <p>虚功定理： https://www.bilibili.com/video/BV1AKtWeNEnE/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
 <h2 id="33">33.雅可比矩阵的原理</h2>
 <p>通过求足端位置对各个关节角度的偏导，得到雅可比矩阵</p>
-<p>首先得知各关节角度：$q=\begin{bmatrix}q_1\q_2\\vdots\q_n\end{bmatrix}$</p>
-<p>末端位置用角度来表示：$x=f(q)$$x=\begin{bmatrix}x_1(q_1,\cdots,q_n)\x_2(q_1,\cdots,q_n)\\vdots\x_m(q_1,\cdots,q_n)\end{bmatrix}$    用二轴举例$x=L_1\cos q_1+L_2\cos(q_1+q_2)$</p>
-<p>对时间求导$\dot{x}_i=\frac{\partial x_i}{\partial q_1}\dot{q}_1+\frac{\partial x_i}{\partial q_2}\dot{q}_2+\cdots+\frac{\partial x_i}{\partial q_n}\dot{q}_n$    得到最后速度的公式$\dot{x}=\begin{bmatrix}\frac{\partial x_1}{\partial q_1} &amp;\frac{\partial x_1}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_1}{\partial q_n}\\frac{\partial x_2}{\partial q_1} &amp;\frac{\partial x_2}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_2}{\partial q_n}\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\frac{\partial x_m}{\partial q_1} &amp;\frac{\partial x_m}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_m}{\partial q_n}\end{bmatrix}\dot{q}$</p>
-<p>最终通过公式$J(q)=\frac{\partial x}{\partial q}$ 得到：</p>
-<p><img alt="图片展示的是雅可比矩阵与速度关系的公式。公式为$\dot{x}=J\dot{q}$，其中$\dot{x}$表示速度，$J$是雅可比矩阵，$\dot{q}$表示关节速度。该公式是雅可比矩阵原理中求解速度的关键表达式，与上文对时间求导得到速度公式相呼应，是通过雅可比矩阵$J(q)=\frac{\partial x}{\partial q}$求得速度$\dot{x}$的最终结果，体现了雅可比矩阵在机器人学中求解速度问题的应用。" src="assets/AHRMbdiJNoS9XyxJOXec0DQbnCe.png" /></p>
+<p>首先得知各关节角度：<span class="math">\(q=\begin{bmatrix}q_1\\q_2\\\vdots\\q_n\end{bmatrix}\)</span></p>
+<p>末端位置用角度来表示：<span class="math">\(x=f(q)\)</span> <span class="math">\(x=\begin{bmatrix}x_1(q_1,\cdots,q_n)\\x_2(q_1,\cdots,q_n)\\\vdots\\x_m(q_1,\cdots,q_n)\end{bmatrix}\)</span>    用二轴举例<span class="math">\(x=L_1\cos q_1+L_2\cos(q_1+q_2)\)</span></p>
+<p>对时间求导<span class="math">\(\dot{x}_i=\frac{\partial x_i}{\partial q_1}\dot{q}_1+\frac{\partial x_i}{\partial q_2}\dot{q}_2+\cdots+\frac{\partial x_i}{\partial q_n}\dot{q}_n\)</span>    得到最后速度的公式<span class="math">\(\dot{x}=\begin{bmatrix}\frac{\partial x_1}{\partial q_1} &amp;\frac{\partial x_1}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_1}{\partial q_n}\\\frac{\partial x_2}{\partial q_1} &amp;\frac{\partial x_2}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_2}{\partial q_n}\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\\frac{\partial x_m}{\partial q_1} &amp;\frac{\partial x_m}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_m}{\partial q_n}\end{bmatrix}\dot{q}\)</span></p>
+<p>最终通过公式<span class="math">\(J(q)=\frac{\partial x}{\partial q}\)</span> 得到：</p>
+<p><img alt="图片展示的是雅可比矩阵与速度关系的公式。公式为<span class="math">\(\\dot{x}=J\\dot{q}\)</span>，其中<span class="math">\(\\dot{x}\)</span>表示速度，<span class="math">\(J\)</span>是雅可比矩阵，<span class="math">\(\\dot{q}\)</span>表示关节速度。该公式是雅可比矩阵原理中求解速度的关键表达式，与上文对时间求导得到速度公式相呼应，是通过雅可比矩阵<span class="math">\(J(q)=\\frac{\\partial x}{\\partial q}\)</span>求得速度<span class="math">\(\\dot{x}\)</span>的最终结果，体现了雅可比矩阵在机器人学中求解速度问题的应用。" src="assets/AHRMbdiJNoS9XyxJOXec0DQbnCe.png" /></p>
 <h2 id="34">34.奇异点</h2>
 <p>奇异点不是“到不了的点”（那是工作空间边界），而是雅可比矩阵降秩的位形，比如腿完全伸直或完全折叠：位置能到达，但在该方向上速度映射失效、关节速度会趋于无穷。而 40cm 手臂够不到 50cm 属于工作空间边界，具体自己查</p>
 <h1 id="40">40.步态和落脚点规划</h1>
 <h2 id="41">41.贝赛尔曲线</h2>
 <p>https://www.bilibili.com/video/BV1YQCvYTEmT/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
-<p>有两个点分别是：$P_0,\quad P_1$然后定义参数：$t\in[0,1]$最后贝塞尔曲线的表达为：</p>
-<p>$P(t)=(1-t)P_0+tP_1$这个是一阶贝塞尔，还可以高阶，理论上便可以表达任何的曲线</p>
+<p>有两个点分别是：<span class="math">\(P_0,\quad P_1\)</span>然后定义参数：<span class="math">\(t\in[0,1]\)</span>最后贝塞尔曲线的表达为：</p>
+<p><span class="math">\(P(t)=(1-t)P_0+tP_1\)</span>这个是一阶贝塞尔，还可以高阶，理论上便可以表达任何的曲线</p>
 <h2 id="42">42.五阶多项式表示</h2>
 <p>起点位置，终点位置，起点速度，终点速度， 起点加速度，终点加速度，六个约束需要五阶（六个系数的）多项式</p>
-<p>$$p(t)=a_0+a_1t+a_2t^2+a_3t^3+a_4t^4+a_5t^5$$</p>
-<p>$$\dot{p}(t)=a_1+2a_2t+3a_3t^2+4a_4t^3+5a_5t^4$$</p>
-<p>$$\ddot{p}(t)=2a_2+6a_3t+12a_4t^2+20a_5t^3$$</p>
+<div class="math-display">\[p(t)=a_0+a_1t+a_2t^2+a_3t^3+a_4t^4+a_5t^5\]</div>
+<div class="math-display">\[\dot{p}(t)=a_1+2a_2t+3a_3t^2+4a_4t^3+5a_5t^4\]</div>
+<div class="math-display">\[\ddot{p}(t)=2a_2+6a_3t+12a_4t^2+20a_5t^3\]</div>
 <p>规定时间T，确定终点的位置和速度</p>
 <p>最终解方程，可以确定任何时间（0&lt;=t&lt;=T）时候的位置和速度</p>
 <h2 id="43">43.摆线</h2>
@@ -177,38 +183,38 @@ cmd.tau  = 0.0
 <p>诸如此类的还有很多，我写高抬腿的时候直接就用到了抛物线，实际上这个也是一种贝塞尔</p>
 <h2 id="44">44.步态规划</h2>
 <p>https://www.bilibili.com/video/BV1YD4y1D7k6/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
-<p>$c_{LF}(t)$：左前腿 LF 当前是否接触地面</p>
-<p>$c_{RF}(t)$：右前腿 RF 当前是否接触地面</p>
-<p>$c_{LH}(t)$：左后腿 LH 当前是否接触地面</p>
-<p>$c_{RH}(t)$：右后腿 RH 当前是否接触地面</p>
+<p><span class="math">\(c_{LF}(t)\)</span>：左前腿 LF 当前是否接触地面</p>
+<p><span class="math">\(c_{RF}(t)\)</span>：右前腿 RF 当前是否接触地面</p>
+<p><span class="math">\(c_{LH}(t)\)</span>：左后腿 LH 当前是否接触地面</p>
+<p><span class="math">\(c_{RH}(t)\)</span>：右后腿 RH 当前是否接触地面</p>
 <p>一种是比较简单的，直接对角线的腿C一致，例如左前和右后同时保持摆动相，而右前和左后保持支撑相，在此基础上可以增加爬行步态本质是改变<strong><em>相位</em></strong>，在这里不过多介绍，可以去搜索常见的步态</p>
 <h2 id="45raibert">45.Raibert启发式落脚点</h2>
 <p>https://github.com/Michael-Jetson/Robotics_Tutorial/blob/main/05_%E8%BF%90%E5%8A%A8%E6%8E%A7%E5%88%B6/10_%E8%B6%B3%E5%BC%8F/140_%E8%90%BD%E8%84%9A%E7%82%B9%E8%A7%84%E5%88%92%E7%BB%8F%E5%85%B8%E6%96%B9%E6%B3%95.md</p>
 <p>当你使用贝塞尔计算摆动相足端的轨迹的时候，需要起点和终点，起点是固定的每次起摆的时候足端接触位置，但是终点并不是固定的，当速度快的时候终点需要向前，减速的时候需要向后，是需要动态计算的，所以有启发式落脚点这个计算方法</p>
 <p>中间公式推导省略，详情看上面的文档，下面给出只发生直行且当你维持现在的速度和位置不变的落脚点的公式,</p>
-<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2}  v_{base}$$</p>
+<div class="math-display">\[p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2}  v_{base}\]</div>
 <p>这里：</p>
 <ul>
-<li>$x_{foot}^{target}$：预测的足端落点,也就是贝塞尔的终点</li>
-<li>$p_{hip}$：髋关节在地面的投影，是在一个xy平面的点，z为0</li>
-<li>$T_{stance}$：支撑相的时间</li>
-<li>$v_{base}$：机器人当前速度,也就是你通过估计器等方法获得的实际机体速度</li>
+<li><span class="math">\(x_{foot}^{target}\)</span>：预测的足端落点,也就是贝塞尔的终点</li>
+<li><span class="math">\(p_{hip}\)</span>：髋关节在地面的投影，是在一个xy平面的点，z为0</li>
+<li><span class="math">\(T_{stance}\)</span>：支撑相的时间</li>
+<li><span class="math">\(v_{base}\)</span>：机器人当前速度,也就是你通过估计器等方法获得的实际机体速度</li>
 </ul>
 <p>下面是要向前移动的公式</p>
-<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref})$$</p>
+<div class="math-display">\[p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref})\]</div>
 <p>当然实际运动肯定不可能只发生直线，你还需要转弯，但是转弯肯定会有身体倾斜，那么就需要一个航向修正项来补偿</p>
 <p>在三维中，转弯造成的髋关节偏移为：</p>
-<p>$$p_{foot}^{yaw}=\frac {T_s}{2}ω_z×(p_{hip}−p_{base})$$</p>
+<div class="math-display">\[p_{foot}^{yaw}=\frac {T_s}{2}ω_z×(p_{hip}−p_{base})\]</div>
 <p>注意这个是叉乘，不是简单的乘法</p>
 <p>因此，完整的启发式落脚点为：</p>
-<p>$$p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref}) + \frac {T_s}{2}\omega_z\times(p_{hip}-p_{base})$$</p>
+<div class="math-display">\[p_{foot}^{target} = p_{hip} + \frac{T_{stance}}{2} v_{base} + k_p(v_{base} - v_{ref}) + \frac {T_s}{2}\omega_z\times(p_{hip}-p_{base})\]</div>
 <ul>
-<li>$w_z $: 绕z轴旋转的角速度</li>
+<li><span class="math">\(w_z\)</span>: 绕z轴旋转的角速度</li>
 </ul>
 <blockquote>
 <p>💡  下面说一下注意事项：
 1. 在实际写代码过程中应注意各个参数的坐标系，如果是世界系最好都是世界系
-2. 要注意$p_{hip}$虽然是xy平面的点，但他也是三维的向量是Vector3d，只是z方向分量为0
+2. 要注意<span class="math">\(p_{hip}\)</span>虽然是xy平面的点，但他也是三维的向量是Vector3d，只是z方向分量为0
 3. 上面公式带入可以直接用，不过我推荐最好先只加入直行，转动等可以稳定直行之后再加入，否则会有很多问题混在一起排查不出来</p>
 </blockquote>
 <h1 id="50">50.估计器</h1>
@@ -226,16 +232,16 @@ cmd.tau  = 0.0
 <p>这里只介绍协方差矩阵和卡尔曼滤波</p>
 <h2 id="54">54.协方差矩阵</h2>
 <p>两个随机变量 X、Y 的协方差定义为：</p>
-<p>$$Cov(X,Y) = E[(X − E[X])·(Y − E[Y])]$$</p>
-<p>• $Cov(X,Y) &gt; 0 $ ：两个变量倾向于一起增大/减小</p>
-<p>• $Cov(X,Y) &lt; 0$：一个增大时，另一个倾向于减小</p>
-<p>• $Cov(X,Y) ≈ 0 $：两者没有明显的线性相关</p>
+<div class="math-display">\[Cov(X,Y) = E[(X − E[X])·(Y − E[Y])]\]</div>
+<p>• <span class="math">\(Cov(X,Y) &gt; 0\)</span> ：两个变量倾向于一起增大/减小</p>
+<p>• <span class="math">\(Cov(X,Y) &lt; 0\)</span>：一个增大时，另一个倾向于减小</p>
+<p>• <span class="math">\(Cov(X,Y) ≈ 0\)</span>：两者没有明显的线性相关</p>
 <p>如果状态有很多维：</p>
-<p>$$x = [ x₁, x₂, …, xₙ ]ᵀ$$</p>
+<div class="math-display">\[x = [ x₁, x₂, …, xₙ ]ᵀ\]</div>
 <p>那么就把所有变量之间的协方差放进一个矩阵：</p>
-<p>$$P = E[(x − μ)(x − μ)ᵀ]$$</p>
+<div class="math-display">\[P = E[(x − μ)(x − μ)ᵀ]\]</div>
 <p>展开就是：</p>
-<p>$$P=\begin{bmatrix}Var(x_1) &amp; Cov(x_1,x_2) &amp; \cdots &amp; Cov(x_1,x_n)\Cov(x_2,x_1) &amp; Var(x_2) &amp; \cdots &amp; Cov(x_2,x_n)\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\Cov(x_n,x_1) &amp; Cov(x_n,x_2) &amp; \cdots &amp; Var(x_n)\end{bmatrix}$$</p>
+<div class="math-display">\[P=\begin{bmatrix}Var(x_1) &amp; Cov(x_1,x_2) &amp; \cdots &amp; Cov(x_1,x_n)\\Cov(x_2,x_1) &amp; Var(x_2) &amp; \cdots &amp; Cov(x_2,x_n)\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\Cov(x_n,x_1) &amp; Cov(x_n,x_2) &amp; \cdots &amp; Var(x_n)\end{bmatrix}\]</div>
 <p>这里有两个重要规律：对角线表示：每一个状态变量自己有多不确定，非对角线：表示：两个状态变量之间的不确定性是否相关</p>
 <h2 id="55">55.卡尔曼滤波</h2>
 <p>https://www.bilibili.com/video/BV1ez4y1X7eR/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
@@ -250,15 +256,15 @@ cmd.tau  = 0.0
 <p><strong>四元数 q</strong> = w + xi + yj + zk：四个数、无奇异、插值平滑，仿真和实机内部基本都用它，缺点是不直观</p>
 <p>三者可以互相转换：一般用旋转矩阵算、用欧拉角看、用四元数传</p>
 <h2 id="63">63.齐次变换：位置和姿态写在一起</h2>
-<p>$$T=\begin{bmatrix}R &amp; p\ 0 &amp; 1\end{bmatrix}\in SE(3)$$</p>
+<div class="math-display">\[T=\begin{bmatrix}R &amp; p\\ 0 &amp; 1\end{bmatrix}\in SE(3)\]</div>
 <p>复合就是连乘，顺序从外往里写：</p>
-<p>$$T_{w}^{f}=T_{w}^{b}T_{b}^{h}T_{h}^{f}$$</p>
+<div class="math-display">\[T_{w}^{f}=T_{w}^{b}T_{b}^{h}T_{h}^{f}\]</div>
 <p>也就是世界系→机身系→髋系→足端系，这就是 12 节正解在三维里的写法。反变换不用求逆矩阵，因为 R 正交：</p>
-<p>$$T^{-1}=\begin{bmatrix}R^{T} &amp; -R^{T}p\ 0 &amp; 1\end{bmatrix}$$</p>
+<div class="math-display">\[T^{-1}=\begin{bmatrix}R^{T} &amp; -R^{T}p\\ 0 &amp; 1\end{bmatrix}\]</div>
 <h2 id="64">64.旋转怎么作用在速度和力上</h2>
-<p>同一个向量在两个坐标系下的表示：$v_{w}=R_{wb}v_{b}$</p>
-<p>姿态变化率与角速度的关系：$\dot{R}=R[\omega]<em>{\times}$，其中 $[\omega]</em>{\times}$ 就是 103 节里那个反对称矩阵，这也是 IMU 的角速度能积分出姿态的根据</p>
-<p>力和力矩本身也是向量，换系同样要旋转。注意<strong><em>力可以平移，力矩不行</em></strong>，力矩要带力臂：$\tau=r\times F$</p>
+<p>同一个向量在两个坐标系下的表示：<span class="math">\(v_{w}=R_{wb}v_{b}\)</span></p>
+<p>姿态变化率与角速度的关系：<span class="math">\(\dot{R}=R[\omega]_{\times}\)</span>，其中 <span class="math">\([\omega]_{\times}\)</span> 就是 103 节里那个反对称矩阵，这也是 IMU 的角速度能积分出姿态的根据</p>
+<p>力和力矩本身也是向量，换系同样要旋转。注意<strong><em>力可以平移，力矩不行</em></strong>，力矩要带力臂：<span class="math">\(\tau=r\times F\)</span></p>
 <h2 id="65">65.一句话总结</h2>
 <p>刚体运动学 = 每条腿的运动学 + 机身一个 6 维位姿。难的不是公式，是<strong><em>坐标系约定</em></strong>：谁相对谁、乘法顺序不能反、旋转不能交换</p>
 <blockquote>
@@ -277,10 +283,10 @@ cmd.tau  = 0.0
 <h2 id="81">81.为什么需要二次规划？</h2>
 <p>为了方便理解，我给出一个场景，当你只写出了狗的足端摆动相和支撑相的轨迹，将其离散化之后会发现只有每个轨迹点的坐标[(x1,y1,z1),(x2,y2,z2),.......(xm,ym,zm)]，还有刚才通过VMC求出的虚拟力，但是速度V却不知道怎么办，这个时候一种解决方式就是QP二次规划，我们想要在x这段距离下，创建出一个关于V的数组：[v1,v2,v3,v4,v5....,vm]，保证它在<strong><em>规定的时间T</em></strong>到达终点(xm,ym,zm)，并且<strong><em>保证平滑</em></strong>的<strong><em>最优速度</em></strong></p>
 <h2 id="82">82.具体公式</h2>
-<p>$$\min_x \frac{1}{2}x^THx+f^Tx$$</p>
+<div class="math-display">\[\min_x \frac{1}{2}x^THx+f^Tx\]</div>
 <p>注意H矩阵必须是半正定的（凸二次规划只要求半正定，正定是更强的条件）</p>
-<p>不等式约束：$Ax\leq b$，将x限制在一个范围，比如速度最大不超过10m/s</p>
-<p>以及等式约束：$A_{eq}x=b_{eq}$t时间必须到达</p>
+<p>不等式约束：<span class="math">\(Ax\leq b\)</span>，将x限制在一个范围，比如速度最大不超过10m/s</p>
+<p>以及等式约束：<span class="math">\(A_{eq}x=b_{eq}\)</span>t时间必须到达</p>
 <p>在此基础上对其进行变式还可以使速度贴近一个值等等，这里不多说式子的推导</p>
 <h2 id="83">83.凸优化和非凸优化</h2>
 <p>这里默认是凸二次规划，实际上底层的二次规划计算不用看，其实我们之前都学过，对于一个二次函数，其二阶导是大于等于0，则为凸函数，其会有最低点，将上述表达式求出最低点，即可求出最小<strong><em>代价函数</em></strong>，即x是最优解</p>
@@ -291,25 +297,25 @@ cmd.tau  = 0.0
 <p>https://www.bilibili.com/video/BV1dm4y177tA/?spm_id_from=333.337.search-card.all.click&amp;vd_source=87b482d594eb8bf5b39c17ae1d683095</p>
 <h2 id="92">92.具体公式</h2>
 <p>首先保证系统是线性的特征：</p>
-<p>$$x˙(t)=Ax(t)+Bu(t)$$</p>
+<div class="math-display">\[x˙(t)=Ax(t)+Bu(t)\]</div>
 <p>离散后：</p>
-<p>$$xk+1=Axk+Buk$$</p>
+<div class="math-display">\[xk+1=Axk+Buk\]</div>
 <ul>
-<li>$x(t)∈Rn$：系统状态向量</li>
-<li>$u(t)\in\mathbb{R}^{m}$：控制输入</li>
-<li>$A\in\mathbb{R}^{n\times n}$：系统状态矩阵，就是描述自身的状态</li>
-<li>$B\in\mathbb{R}^{n\times m}$：控制输入矩阵，就是描述输入对状态的改变</li>
+<li><span class="math">\(x(t)∈Rn\)</span>：系统状态向量</li>
+<li><span class="math">\(u(t)\in\mathbb{R}^{m}\)</span>：控制输入</li>
+<li><span class="math">\(A\in\mathbb{R}^{n\times n}\)</span>：系统状态矩阵，就是描述自身的状态</li>
+<li><span class="math">\(B\in\mathbb{R}^{n\times m}\)</span>：控制输入矩阵，就是描述输入对状态的改变</li>
 </ul>
 <p>之后就是构建代价函数</p>
-<p>$$J=∫0∞[xT(t)Qx(t)+uT(t)Ru(t)]dt$$</p>
+<div class="math-display">\[J=∫0∞[xT(t)Qx(t)+uT(t)Ru(t)]dt\]</div>
 <p>Q和R分别是对跟踪状态和跟踪控制的权重，且你会发现LQR是无限时域，时间是从0开始到无限</p>
 <p>Q矩阵是半正定，R矩阵是正定，毕竟你想你的控制不能是0啊</p>
 <p>现在整个系统的规律有了，代价函数也有了，那么只需要计算代价函数的最小值即可，但是由于是无限时域，需要用到<strong><em>Riccati 方程</em></strong>，这个方程的本质其实就是贝尔曼最优</p>
-<p>$$ATP+PA−PBR−1BTP+Q=0$$</p>
+<div class="math-display">\[ATP+PA−PBR−1BTP+Q=0\]</div>
 <p>先不用管这个公式哪来的，你先知道这个公式的A，B是整个系统的线性规律，Q和R是我们自己构建的参数权重矩阵，然后能计算出来P矩阵，有了这个P矩阵就可以计算反馈增益：</p>
-<p>$$K=R−1BTP$$</p>
+<div class="math-display">\[K=R−1BTP\]</div>
 <p>这个时候你就求解完毕得到：</p>
-<p>$$u=−Kx$$</p>
+<div class="math-display">\[u=−Kx\]</div>
 <p>说白了，就是一个线性系统，构建一个代价函数，但是由于是无限时域没有办法直接通过迭代求解，所以将无限的时间压缩成一个P，来计算最小代价函数，再通过P计算出K，无论是哪一个时刻，只需要知道状态x，就可以直接求出最优控制u，注意K完全可以直接通过离线计算，至于为什么可以压缩成P，那就是黎卡提方程的原理</p>
 <p>作为练手可以写一个倒立摆的LQR控制器在mujuco仿真中来跑。代码不多都不到一千行，模型可以网上随便找一个。可以使用ai，但是最好自己手推状态方程，并代入K值公式</p>
 <p>https://www.bilibili.com/video/BV1iN411X7LF/?spm_id_from=333.1387.favlist.content.click&amp;vd_source=73cdd23ba345f0787a7f226f06f4b797</p>
@@ -320,36 +326,36 @@ cmd.tau  = 0.0
 <p>MPC是有限时域的，只要你知道当前状态x0，时间间隔dt，以及系统的线性规律，就可以通过MPC进行预测和控制，这里把MPC和LQR放在一起讲也是因为他俩很相似</p>
 <h2 id="103mpc">103.MPC的具体公式</h2>
 <p>来，依旧是先写一个状态空间方程：</p>
-<p>$$xk+1=Axk+Buk$$</p>
+<div class="math-display">\[xk+1=Axk+Buk\]</div>
 <p>想必都不陌生了，依旧是描述系统的线性规律</p>
 <p>我们现在的目的是自己给出轨迹序列x，然后求出控制序列u</p>
 <p>参考轨迹由上层的指令生成，包括：</p>
 <ul>
 <li>期望质心位置P（这里我写成P了，方便和轨迹序列x区分）</li>
 <li>期望质心速度v</li>
-<li>期望角度，也就是身体姿态 $ θ$</li>
-<li>期望角速度 $ ω$</li>
+<li>期望角度，也就是身体姿态 <span class="math">\(θ\)</span></li>
+<li>期望角速度 <span class="math">\(ω\)</span></li>
 </ul>
-<p>$$\mathbf{x} = \begin{bmatrix} x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi &amp; v_x &amp; v_y &amp; v_z &amp; \omega_x &amp; \omega_y &amp; \omega_z \end{bmatrix}^{\mathsf{T}} \in \mathbb{R}^{12}$$</p>
-<p>$$\mathbf{u} =\begin{bmatrix}f_{1x} &amp; f_{1y} &amp; f_{1z} &amp;f_{2x} &amp; f_{2y} &amp; f_{2z} &amp;f_{3x} &amp; f_{3y} &amp; f_{3z} &amp;f_{4x} &amp; f_{4y} &amp; f_{4z}\end{bmatrix}^{\mathsf{T}}\in \mathbb{R}^{12}$$</p>
+<div class="math-display">\[\mathbf{x} = \begin{bmatrix} x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi &amp; v_x &amp; v_y &amp; v_z &amp; \omega_x &amp; \omega_y &amp; \omega_z \end{bmatrix}^{\mathsf{T}} \in \mathbb{R}^{12}\]</div>
+<div class="math-display">\[\mathbf{u} =\begin{bmatrix}f_{1x} &amp; f_{1y} &amp; f_{1z} &amp;f_{2x} &amp; f_{2y} &amp; f_{2z} &amp;f_{3x} &amp; f_{3y} &amp; f_{3z} &amp;f_{4x} &amp; f_{4y} &amp; f_{4z}\end{bmatrix}^{\mathsf{T}}\in \mathbb{R}^{12}\]</div>
 <p>通过牛顿第二定律，你会发现，具体的步骤自己去查</p>
-<p>$$\mathbf{A}=\begin{bmatrix}\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{I}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{I}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3} &amp; \mathbf{0}<em>{3\times3} &amp; \mathbf{0}</em>{3\times3}\end{bmatrix}\in\mathbb{R}^{12\times12}$$</p>
-<p>$$\mathbf{B}=\begin{bmatrix}\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3} &amp;\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3}\\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3} &amp;\mathbf{0}<em>{3\times3} &amp;\mathbf{0}</em>{3\times3}\\frac{1}{m}\mathbf{I}<em>{3\times3} &amp;\frac{1}{m}\mathbf{I}</em>{3\times3} &amp;\frac{1}{m}\mathbf{I}<em>{3\times3} &amp;\frac{1}{m}\mathbf{I}</em>{3\times3}\\mathbf{I}^{-1}[\mathbf{r}<em>1]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>2]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>3]</em>{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}<em>4]</em>{\times}\end{bmatrix}\in\mathbb{R}^{12\times12}$$</p>
+<div class="math-display">\[\mathbf{A}=\begin{bmatrix}\mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{I}_{3\times3} &amp; \mathbf{0}_{3\times3}\\\mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{I}_{3\times3}\\\mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3}\\\mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3} &amp; \mathbf{0}_{3\times3}\end{bmatrix}\in\mathbb{R}^{12\times12}\]</div>
+<div class="math-display">\[\mathbf{B}=\begin{bmatrix}\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3}\\\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3} &amp;\mathbf{0}_{3\times3}\\\frac{1}{m}\mathbf{I}_{3\times3} &amp;\frac{1}{m}\mathbf{I}_{3\times3} &amp;\frac{1}{m}\mathbf{I}_{3\times3} &amp;\frac{1}{m}\mathbf{I}_{3\times3}\\\mathbf{I}^{-1}[\mathbf{r}_1]_{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}_2]_{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}_3]_{\times} &amp;\mathbf{I}^{-1}[\mathbf{r}_4]_{\times}\end{bmatrix}\in\mathbb{R}^{12\times12}\]</div>
 <p>这里的r是足端相对质心的位置，如下</p>
-<p>$$[\mathbf{r}<em>i]</em>{\times}=\begin{bmatrix}0 &amp; -r_{iz} &amp; r_{iy}\r_{iz} &amp; 0 &amp; -r_{ix}\-r_{iy} &amp; r_{ix} &amp; 0\end{bmatrix}$$</p>
+<div class="math-display">\[[\mathbf{r}_i]_{\times}=\begin{bmatrix}0 &amp; -r_{iz} &amp; r_{iy}\\r_{iz} &amp; 0 &amp; -r_{ix}\\-r_{iy} &amp; r_{ix} &amp; 0\end{bmatrix}\]</div>
 <p>最后得到</p>
-<p>$\dot{\mathbf{x}}=\mathbf{A}\mathbf{x}+\mathbf{B}\mathbf{u}+\mathbf{g}$   g项是重力项</p>
+<p><span class="math">\(\dot{\mathbf{x}}=\mathbf{A}\mathbf{x}+\mathbf{B}\mathbf{u}+\mathbf{g}\)</span>   g项是重力项</p>
 <h2 id="104">104.代价函数</h2>
 <p>你会发现LQR是无限时域的，你可以将时间压缩，然后通过状态直接求出最优的控制，而MPC却是有限时域的，那就需要我们写出dt和N，比如dt = 0.02s，N = 20步，预测后续0.4秒的变化</p>
 <p>接下来依旧是构建目标函数：</p>
-<p>$$J = \sum_{i=1}^{N_p} | \mathbf{x}<em>{k+i} - \mathbf{x}</em>{k+i}^{\text{ref}} |<em>{\mathbf{Q}}^2 + \sum</em>{i=0}^{N_c-1} | \mathbf{u}<em>{k+i} - \mathbf{u}</em>{k+i}^{\text{ref}} |_{\mathbf{R}}^2$$</p>
-<p>看着挺复杂，实际上就是将状态是否跟踪预定轨迹和控制是否跟踪希望的控制的两个代价，在此基础上我们再加上控制惩罚，不让控制变化率太高防止抽风 $Δuk=uk−uk−1$：</p>
-<p>$$J = \sum_{i=1}^{N_p} | \mathbf{x}<em>{k+i} - \mathbf{x}</em>{k+i}^{\text{ref}} |<em>{\mathbf{Q}}^2 + \sum</em>{i=0}^{N_c-1} | \mathbf{u}<em>{k+i} - \mathbf{u}</em>{k+i}^{\text{ref}} |<em>{\mathbf{R}}^2 + \sum</em>{i=0}^{N_c-1} | \Delta \mathbf{u}<em>{k+i} |</em>{\mathbf{S}}^2$$</p>
+<div class="math-display">\[J = \sum_{i=1}^{N_p} \| \mathbf{x}_{k+i} - \mathbf{x}_{k+i}^{\text{ref}} \|_{\mathbf{Q}}^2 + \sum_{i=0}^{N_c-1} \| \mathbf{u}_{k+i} - \mathbf{u}_{k+i}^{\text{ref}} \|_{\mathbf{R}}^2\]</div>
+<p>看着挺复杂，实际上就是将状态是否跟踪预定轨迹和控制是否跟踪希望的控制的两个代价，在此基础上我们再加上控制惩罚，不让控制变化率太高防止抽风 <span class="math">\(Δuk=uk−uk−1\)</span>：</p>
+<div class="math-display">\[J = \sum_{i=1}^{N_p} \| \mathbf{x}_{k+i} - \mathbf{x}_{k+i}^{\text{ref}} \|_{\mathbf{Q}}^2 + \sum_{i=0}^{N_c-1} \| \mathbf{u}_{k+i} - \mathbf{u}_{k+i}^{\text{ref}} \|_{\mathbf{R}}^2 + \sum_{i=0}^{N_c-1} \| \Delta \mathbf{u}_{k+i} \|_{\mathbf{S}}^2\]</div>
 <h2 id="105">105.代价函数计算</h2>
 <p><img alt="图片展示了MPC（模型预测控制）的预测过程相关内容。假设当前时刻为k，已知当前状态x_k，未来预测N_p步。首先给出第一个预测状态公式x_{k+1} = Ax_k + Bu_k，再给出第二个预测状态公式x_{k+2} = Ax_{k+1} + Bu_{k+1}，接着将第二个状态代入第一个状态，得到x_{k+2} = A^2x_k + ABu_k + Bu_{k+1}，最后继续展开，得到x_{k+i} = A^ix_k + ∑(j=0到i-1)A^(i-1-j)Bu_{k+j}的公式。这些公式与上下文紧密相关，是对MPC预测过程的数学推导说明。" src="assets/MGLBbtINwogHIixJ9MkcCKPVnqd.png" /></p>
 <p>你会发现我只要知道当前的状态，然后我就可以写出未来所有的状态！</p>
 <p>而且最关键的是未来的状态只和第一步的x0还有未来的控制序列有关\~</p>
-<p>$$\mathbf{X}=\begin{bmatrix}\mathbf{x}_1\\mathbf{x}_2\\vdots\\mathbf{x}_N\end{bmatrix}=\begin{bmatrix}\mathbf{A}_d\mathbf{x}_0+\mathbf{B}_d\mathbf{u}_0+\mathbf{g}_d\\mathbf{A}_d^2\mathbf{x}_0+\mathbf{A}_d\mathbf{B}_d\mathbf{u}_0+\mathbf{B}_d\mathbf{u}_1+\left(\mathbf{A}_d+\mathbf{I}\right)\mathbf{g}_d\\vdots\\mathbf{A}_d^N\mathbf{x}_0+\mathbf{A}_d^{N-1}\mathbf{B}_d\mathbf{u}_0+\mathbf{A}_d^{N-2}\mathbf{B}_d\mathbf{u}<em>1+\cdots+\mathbf{B}<em>d\mathbf{u}</em>{N-1}+\sum</em>{j=0}^{N-1}\mathbf{A}_d^j\mathbf{g}_d\end{bmatrix}$$</p>
+<div class="math-display">\[\mathbf{X}=\begin{bmatrix}\mathbf{x}_1\\\mathbf{x}_2\\\vdots\\\mathbf{x}_N\end{bmatrix}=\begin{bmatrix}\mathbf{A}_d\mathbf{x}_0+\mathbf{B}_d\mathbf{u}_0+\mathbf{g}_d\\\mathbf{A}_d^2\mathbf{x}_0+\mathbf{A}_d\mathbf{B}_d\mathbf{u}_0+\mathbf{B}_d\mathbf{u}_1+\left(\mathbf{A}_d+\mathbf{I}\right)\mathbf{g}_d\\\vdots\\\mathbf{A}_d^N\mathbf{x}_0+\mathbf{A}_d^{N-1}\mathbf{B}_d\mathbf{u}_0+\mathbf{A}_d^{N-2}\mathbf{B}_d\mathbf{u}_1+\cdots+\mathbf{B}_d\mathbf{u}_{N-1}+\sum_{j=0}^{N-1}\mathbf{A}_d^j\mathbf{g}_d\end{bmatrix}\]</div>
 <p>这里看着复杂，实际A我们知道，B我们知道，x0也知道，就差控制序列U也就是我们要求的</p>
 <p>将上面的X序列带入之前的代价公式，就消去了X，整个代价函数就只有关于U的变量，那么这个时候，代价函数就转化成了关于U的二次型</p>
 <p>之后，我们便可以使用QP二次规划对其进行求解，约束有：等式约束，摆动腿对身体的f是0；不等式约束：摩擦力的范围，官方叫法是摩擦锥</p>
@@ -364,34 +370,34 @@ cmd.tau  = 0.0
 <p>频率 </p>
 <p>MPC相当于这个机器人的大脑，是决策者。上面写了是有一段时间的预测值，每轮MPC走一轮假如为0.02s，则频率为50HZ,而WBC直接连接底层运动是高频的大约在500hz左右</p>
 <p>模型</p>
-<p>MPC使用的模型是单刚体模型(SRB) ，是简化的模型（不包含惯性力等），把机身想象成一个质量均匀的长方体，腿想象成无质量的木棍。决策变量为 $x = (p,v,\theta,\omega)$,分别为位置，速度，姿态，角速度，共12维向量，输出为 $u= (f_{fl},f_{FR},f_{RL},f_{RR})$</p>
+<p>MPC使用的模型是单刚体模型(SRB) ，是简化的模型（不包含惯性力等），把机身想象成一个质量均匀的长方体，腿想象成无质量的木棍。决策变量为 <span class="math">\(x = (p,v,\theta,\omega)\)</span>,分别为位置，速度，姿态，角速度，共12维向量，输出为 <span class="math">\(u= (f_{fl},f_{FR},f_{RL},f_{RR})\)</span></p>
 <p>WBC使用的是全状态模型(FSM),是一个机体实际的模型，考虑到了惯性力 比如：摆动腿的质量，当摆动足端有向前加速度时，支撑腿会对应进行补偿。或者拥有转动加速度时会根据COM(center of mass) 来分配力</p>
 <h2 id="112">112.具体公式</h2>
-<p>对于一个浮动基座机器人拥有决策变量 $x = (\ddot{q},f)$，共30维的向量， $\ddot{q}$为 18维，三维平动，三维转动，十二维关节，f为12维，四条腿每条腿三维的足端力（也有42维的决策变量，加入了关节力矩(12维) ）</p>
-<p>$$M(q) \ddot{q} + h(q, \dot{q}) = S^T \tau + \sum_{c} J_c^T \lambda_c \tag{}$$</p>
+<p>对于一个浮动基座机器人拥有决策变量 <span class="math">\(x = (\ddot{q},f)\)</span>，共30维的向量， <span class="math">\(\ddot{q}\)</span>为 18维，三维平动，三维转动，十二维关节，f为12维，四条腿每条腿三维的足端力（也有42维的决策变量，加入了关节力矩(12维) ）</p>
+<div class="math-display">\[M(q) \ddot{q} + h(q, \dot{q}) = S^T \tau + \sum_{c} J_c^T \lambda_c \tag{}\]</div>
 <p>其中：</p>
 <ul>
-<li>$M(q) \in \mathbb{R}^{n_v \times n_v}$:广义质量矩阵(对称正定)</li>
-<li>$h(q, \dot{q}) \in \mathbb{R}^{n_v}$:科氏力 + 重力项</li>
-<li>$S \in \mathbb{R}^{n_a \times n_v}$:选择矩阵,$S = [0_{n_a \times 6} \;\; I_{n_a}]$,选出驱动关节</li>
-<li>$\tau \in \mathbb{R}^{n_a}$:关节扭矩(决策变量)</li>
-<li>$J_c \in \mathbb{R}^{3n_c \times n_v}$:接触 Jacobian(所有接触点堆叠)</li>
-<li>$\lambda_c \in \mathbb{R}^{3n_c}$:接触力(决策变量)</li>
+<li><span class="math">\(M(q) \in \mathbb{R}^{n_v \times n_v}\)</span>:广义质量矩阵(对称正定)</li>
+<li><span class="math">\(h(q, \dot{q}) \in \mathbb{R}^{n_v}\)</span>:科氏力 + 重力项</li>
+<li><span class="math">\(S \in \mathbb{R}^{n_a \times n_v}\)</span>:选择矩阵,<span class="math">\(S = [0_{n_a \times 6} \;\; I_{n_a}]\)</span>,选出驱动关节</li>
+<li><span class="math">\(\tau \in \mathbb{R}^{n_a}\)</span>:关节扭矩(决策变量)</li>
+<li><span class="math">\(J_c \in \mathbb{R}^{3n_c \times n_v}\)</span>:接触 Jacobian(所有接触点堆叠)</li>
+<li><span class="math">\(\lambda_c \in \mathbb{R}^{3n_c}\)</span>:接触力(决策变量)</li>
 </ul>
 <p>再往下讲之前我们再复习一下QP，实际上一个QP问题是让一个二次型在满足约束的情况下寻找最小代价的解</p>
 <p>一个Ax = b ，可以通过变化得到二次型</p>
-<p>$$|Ax-b|^2 = x^T A^T A x - 2b^T A x + b^T b$$</p>
+<div class="math-display">\[\|Ax-b\|^2 = x^T A^T A x - 2b^T A x + b^T b\]</div>
 <p>计算如下</p>
 <p><img alt="图片展示了从Ax=b出发，推导出x^TA^TAx - 2b^TAx + b^Tb = 0的推导过程。首先从Ax=b两边作平方范数得到(Ax - b)^T(Ax - b) = 0，展开后得到x^TA^TAx - x^TA^Tb - b^TAx + b^Tb = 0。再由x^TA^Tb = b^TAx，可得x^TA^TAx - 2b^TAx + b^Tb = 0。该图片是对上文“一个Ax=b，可以通过变化得到二次型”内容的数学推导展示，是后续计算和公式推导的基础。" src="assets/IoovbNdSgoH0HnxfKGhcVi8inOe.png" /></p>
-<p>假如你要写一个小车到达目标位置和目标速度的QP，可以将决策变量 $x＝（p,v）$</p>
+<p>假如你要写一个小车到达目标位置和目标速度的QP，可以将决策变量 <span class="math">\(x＝（p,v）\)</span></p>
 <p>目标函数如下：</p>
-<p>$$min(||Q(p_{act} - p_{ref})||^2 + ||P(v_{act} - v_{ref})||^2)$$</p>
+<div class="math-display">\[min(||Q(p_{act} - p_{ref})||^2 + ||P(v_{act} - v_{ref})||^2)\]</div>
 <p>根据上面计算</p>
-<p>$$x_{act}＝Ax$$</p>
-<p>$$A＝ \begin{array}{cc} I_{3} &amp; 0 \ 0&amp;I_3\end{array}$$</p>
+<div class="math-display">\[x_{act}＝Ax\]</div>
+<div class="math-display">\[A＝ \begin{array}{cc} I_{3} &amp; 0 \\ 0&amp;I_3\end{array}\]</div>
 <p>可得二次型</p>
-<p>$$H＝A_p^TQ A_p + A_v^T P A_v $$</p>
-<p>$$g = -2(A_p^T Q b_p + A_v^T P b_v)$$</p>
+<div class="math-display">\[H＝A_p^TQ A_p + A_v^T P A_v\]</div>
+<div class="math-display">\[g = -2(A_p^T Q b_p + A_v^T P b_v)\]</div>
 <p>回到WBC，像上面通过QP代价函数最小化，来求解决策变量，这个就叫做软约束也叫跟踪目标</p>
 <p>而在求解过程中不可能只有跟踪目标，还有物理世界的约束，比如小车可达最大速度，电机输出扭矩等，这类就叫硬约束</p>
 <p>而在四足中，硬约束就是 动力学约束，摩擦锥，接触无滑动约束等</p>
@@ -416,7 +422,7 @@ cmd.tau  = 0.0
 <ol>
 <li>当你使用mpc+wbc的时候就决定了你要用力控，那么一定先在仿真中跑一跑再上实机</li>
 <li>mpc和wbc在书写中有一个变量是接触情况contact_state,当你使用仿真中的实际接触情况的话你会发现他一定是四足全支撑状态，四条腿都是有力的且大小均匀。如果你要摆动的话就需要切换到你步态规划的接触情况，而接触情况不是必须要摆动的0.5T完毕后才可以落地，当遇到特殊情况，比如踩到石头了或者前面的路崎岖，那么你的实际触地情况是不同的，这个要注意。而怎么规划落地和怎么判断是不是真的接触到了，这个在之后会提及</li>
-<li>mpc+wbc的链路并不会输出摆动相的力，也不会让你的摆动腿动，甚至加的约束都是让摆动腿力为0，那为什么wbc还要加入期望摆动腿加速度并跟踪呢。第一点，你输入的摆动足端加速度是通过足端落脚点规划通过贝塞尔的二次微分来输入的轨迹加速度也就是前馈，并加入pd控制得到的参考加速度$a_{ref} = a_{ff} + K_p * e_p + K_d * e_v$这个把足端看为一个质点，没有质量，而实际肯定是有质量的，进入wbc通过动力学公式计算实际足端的加速度第二点，加速度的生成可以使用贝塞尔，但是z方向最少得是四阶贝塞尔，否则加速度起末点不为0,容易有强振动，而x方向的加速度可以使用三阶贝塞尔，因为平地上在x方向有足够的空间，不会碰到障碍物。而具体情况具体分析，之后如果遇到问题，x加速度的下图为x三阶，四阶贝塞尔的x-t / z-t曲线</li>
+<li>mpc+wbc的链路并不会输出摆动相的力，也不会让你的摆动腿动，甚至加的约束都是让摆动腿力为0，那为什么wbc还要加入期望摆动腿加速度并跟踪呢。第一点，你输入的摆动足端加速度是通过足端落脚点规划通过贝塞尔的二次微分来输入的轨迹加速度也就是前馈，并加入pd控制得到的参考加速度<span class="math">\(a_{ref} = a_{ff} + K_p * e_p + K_d * e_v\)</span>这个把足端看为一个质点，没有质量，而实际肯定是有质量的，进入wbc通过动力学公式计算实际足端的加速度第二点，加速度的生成可以使用贝塞尔，但是z方向最少得是四阶贝塞尔，否则加速度起末点不为0,容易有强振动，而x方向的加速度可以使用三阶贝塞尔，因为平地上在x方向有足够的空间，不会碰到障碍物。而具体情况具体分析，之后如果遇到问题，x加速度的下图为x三阶，四阶贝塞尔的x-t / z-t曲线</li>
 </ol>
 <p><img alt="图片展示了机器狗行走时的运动学参数随时间变化的曲线。包含X、Z方向的位置、速度、加速度曲线，每种运动学参数又分为位置、速度、加速度三部分。位置曲线呈现上升趋势，速度曲线有正负波动，加速度曲线有正负变化。图中还标注了“Segment joint”（段关节）位置，对应Z方向速度曲线的峰值处。该图与上下文介绍的机器狗行走运动学参数相关，直观呈现了参数随时间的变化情况。" src="assets/AHKhbsE93opQbHxvOOtckjHInug.png" /></p>
 <ol>
@@ -427,7 +433,7 @@ cmd.tau  = 0.0
 <p><code>Plain Text
 _solver.data()-&gt;setNumberOfVariables(n_var);
 _solver.data()-&gt;setNumberOfConstraints(n_con);</code></p>
-<p>第一行是决策变量的维度也就是$x = (\ddot{q},f)$的维度，30维</p>
+<p>第一行是决策变量的维度也就是<span class="math">\(x = (\ddot{q},f)\)</span>的维度，30维</p>
 <p>第二行是硬约束的维度根据你的实际约束情况来定比如之前提到的5个硬约束，QP 约束总行数: 18(动力学) + 12(腿级: 支撑不打滑/摆动 f=0) + 20(摩擦锥, 4腿×5行)总共50行</p>
 <ol>
 <li>存在sim2real gap</li>
