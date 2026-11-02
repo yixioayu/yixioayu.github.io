@@ -99,12 +99,6 @@ a:hover{text-decoration:underline}
 </li>
 <li><a href="#_13">十三、深入学习路线</a></li>
 <li><a href="#_14">十四、最小工具清单</a></li>
-<li><a href="#linux-kernel">Linux Kernel</a></li>
-<li><a href="#linux_6">Linux 系统调用</a></li>
-<li><a href="#cpu">CPU调度</a></li>
-<li><a href="#linux_7">linux内存管理</a></li>
-<li><a href="#linux_8">linux设备树，这个要看</a></li>
-<li><a href="#linux_9">Linux 裁剪</a></li>
 </ul>
 </div>
 <p>这个文档不从常规的什么linux命令开始讲起，而是直接将linux常见的使用工具等列出，旨在快速上手linux,遇到问题可以快速解决（纯手写）</p>
@@ -584,93 +578,6 @@ docker images
 </table>
 <p>这些命令不需要一次背完。先知道每类问题应该找什么工具，再通过 AI或者<code>man</code>确认具体参数</p>
 <p>到这里你就可以止步了</p>
-<h1 id="linuxai">linux精通（大体让ai给个技术栈，万一真有高手学呢？这里面一半只是听过，一半压根不知道，后续看看有无高手开发这个文档）</h1>
-<h2 id="linux-kernel">Linux Kernel</h2>
-<ul>
-<li>Kernel 的作用 </li>
-<li>User Space / Kernel Space </li>
-<li>System Call </li>
-<li>Kernel Mode / User Mode </li>
-<li>Kernel Image </li>
-<li>Kernel Module </li>
-<li>Linux Kernel Source Tree </li>
-<li>Kernel Configuration </li>
-<li>Kernel Build </li>
-<li>Kernel Boot</li>
-</ul>
-<h2 id="linux_6">Linux 系统调用</h2>
-<ul>
-<li>syscall 是什么</li>
-<li>syscall table</li>
-<li>syscall 参数如何传递</li>
-<li>用户态如何进入内核态 </li>
-<li><code>syscall</code></li>
-<li><code>ioctl</code></li>
-<li><code>mmap</code></li>
-<li><code>read/write</code></li>
-<li><code>poll/select/epoll</code></li>
-</ul>
-<h2 id="cpu">CPU调度</h2>
-<ul>
-<li>Process </li>
-<li>Thread </li>
-<li>Task </li>
-<li>PID </li>
-<li>TGID</li>
-<li>PCB / task_struct</li>
-<li>context switch</li>
-<li>scheduler</li>
-<li>runqueue</li>
-<li>CFS</li>
-<li>RT scheduler</li>
-<li>priority</li>
-<li>nice</li>
-<li>affinity</li>
-<li>CPU isolation</li>
-<li>NUMA</li>
-<li>SMP</li>
-<li>preemption</li>
-<li>interrupt</li>
-<li>softirq</li>
-<li>workqueue</li>
-</ul>
-<h2 id="linux_7">linux内存管理</h2>
-<ul>
-<li>Virtual Memory</li>
-<li>Physical Memory</li>
-<li>Page</li>
-<li>Page Table</li>
-<li>TLB</li>
-<li>MMU</li>
-<li>mmap</li>
-<li>malloc</li>
-<li>brk</li>
-<li>heap</li>
-<li>stack</li>
-<li>shared memory</li>
-<li>page cache</li>
-<li>swap</li>
-<li>OOM</li>
-</ul>
-<h2 id="linux_8">linux设备树，这个要看</h2>
-<ul>
-<li>DTS</li>
-<li>DTSI</li>
-<li>DTB</li>
-<li>DTC</li>
-<li>node</li>
-<li>property</li>
-<li>compatible</li>
-<li>reg</li>
-<li>interrupts</li>
-<li>clocks</li>
-<li>gpio</li>
-<li>pinctrl</li>
-<li>phandle</li>
-<li>device tree overlay</li>
-</ul>
-<h2 id="linux_9">Linux 裁剪</h2>
-<p>根据目标硬件和功能需求，只保留必要的内核功能</p>
   </article>
 </main>
 <footer class="foot">山西农大 GOW 战队 · 知识文档</footer>
