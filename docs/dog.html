@@ -89,6 +89,13 @@ a:hover{text-decoration:underline}
 <li><a href="#81">81.为什么需要二次规划？</a></li>
 <li><a href="#82">82.具体公式</a></li>
 <li><a href="#83">83.凸优化和非凸优化</a></li>
+<li><a href="#851">851.连续与离散</a></li>
+<li><a href="#852">852.离散化的三种方法</a><ul>
+<li><a href="#853">853.第一种 前向/后向差分法</a></li>
+<li><a href="#854-zoh">854.第二种 零阶保持器法（ZOH）</a></li>
+<li><a href="#855-tustin">855.第三种 双线性变化法（Tustin 变换法）</a></li>
+</ul>
+</li>
 <li><a href="#91lqr">91.为什么需要LQR</a></li>
 <li><a href="#92">92.具体公式</a></li>
 <li><a href="#101mpc">101.什么是MPC</a></li>
@@ -102,7 +109,8 @@ a:hover{text-decoration:underline}
 </ul>
 </div>
 <blockquote>
-<p>🥖  声明：在比赛期间注意生命安全！！！若有事故概不负责，本文档只做机器狗最重要的知识，详情看Lain的文档，飞书有类似文档订阅功能，文档持续更新，开启此功能后，更新时会有提醒！！！</p>
+<p>🥖 
+声明：在比赛期间注意生命安全！！！若有事故概不负责，本文档只做机器狗最重要的知识，详情看Lain的文档，飞书有类似文档订阅功能，文档持续更新，开启此功能后，更新时会有提醒！！！</p>
 </blockquote>
 <h1 id="00">00.什么是关节电机</h1>
 <h2 id="01">01.电机</h2>
@@ -146,8 +154,10 @@ cmd.kd   = 0.01
 cmd.tau  = 0.0 
 </code></pre>
 <blockquote>
-<p>🥖  注意！！！宇树的M8010是单圈绝对编码器，重新上电后不管电机输出当前的绝对位置，在机械狗上只需要向电机发送空的请求便可以返回当前的位置，同时得知机械的零位角度，最后软件输出绝对位置即可</p>
-<p>✍️  再注意！！！，当你尝试的时候，要么千万不要随便设置电机参数，一定是三思而后行，最简单的就是先把kp调低，电机参数0.01的差距就完全不一样！！！关节电机的力量巨大，操作不好会死（字面意思）！！！</p>
+<p>🥖 
+注意！！！宇树的M8010是单圈绝对编码器，重新上电后不管电机输出当前的绝对位置，在机械狗上只需要向电机发送空的请求便可以返回当前的位置，同时得知机械的零位角度，最后软件输出绝对位置即可</p>
+<p>✍️ 
+再注意！！！，当你尝试的时候，要么千万不要随便设置电机参数，一定是三思而后行，最简单的就是先把kp调低，电机参数0.01的差距就完全不一样！！！关节电机的力量巨大，操作不好会死（字面意思）！！！</p>
 </blockquote>
 <h1 id="30">30.雅可比矩阵</h1>
 <h2 id="31">31.雅可比矩阵是什么？</h2>
@@ -162,7 +172,7 @@ cmd.tau  = 0.0
 <p>末端位置用角度来表示：<span class="math">\(x=f(q)\)</span> <span class="math">\(x=\begin{bmatrix}x_1(q_1,\cdots,q_n)\\x_2(q_1,\cdots,q_n)\\\vdots\\x_m(q_1,\cdots,q_n)\end{bmatrix}\)</span>    用二轴举例<span class="math">\(x=L_1\cos q_1+L_2\cos(q_1+q_2)\)</span></p>
 <p>对时间求导<span class="math">\(\dot{x}_i=\frac{\partial x_i}{\partial q_1}\dot{q}_1+\frac{\partial x_i}{\partial q_2}\dot{q}_2+\cdots+\frac{\partial x_i}{\partial q_n}\dot{q}_n\)</span>    得到最后速度的公式<span class="math">\(\dot{x}=\begin{bmatrix}\frac{\partial x_1}{\partial q_1} &amp;\frac{\partial x_1}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_1}{\partial q_n}\\\frac{\partial x_2}{\partial q_1} &amp;\frac{\partial x_2}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_2}{\partial q_n}\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\\frac{\partial x_m}{\partial q_1} &amp;\frac{\partial x_m}{\partial q_2} &amp;\cdots &amp;\frac{\partial x_m}{\partial q_n}\end{bmatrix}\dot{q}\)</span></p>
 <p>最终通过公式<span class="math">\(J(q)=\frac{\partial x}{\partial q}\)</span> 得到：</p>
-<p><img alt="图片展示的是雅可比矩阵与速度关系的公式。公式为<span class="math">\(\\dot{x}=J\\dot{q}\)</span>，其中<span class="math">\(\\dot{x}\)</span>表示速度，<span class="math">\(J\)</span>是雅可比矩阵，<span class="math">\(\\dot{q}\)</span>表示关节速度。该公式是雅可比矩阵原理中求解速度的关键表达式，与上文对时间求导得到速度公式相呼应，是通过雅可比矩阵<span class="math">\(J(q)=\\frac{\\partial x}{\\partial q}\)</span>求得速度<span class="math">\(\\dot{x}\)</span>的最终结果，体现了雅可比矩阵在机器人学中求解速度问题的应用。" src="assets/AHRMbdiJNoS9XyxJOXec0DQbnCe.png" /></p>
+<p><img alt="图片展示的是雅可比矩阵与速度关系的公式。公式为<span class="math">\(\\dot{x}=J\\dot{q}\)</span>，其中<span class="math">\(\\dot{x}\)</span>表示速度，<span class="math">\(J\)</span>是雅可比矩阵，<span class="math">\(\\dot{q}\)</span>表示关节速度。该公式是雅可比矩阵原理中求解速度的关键表达式，与上文对时间求导得到速度公式相呼应，是通过雅可比矩阵<span class="math">\(J(q)=\\frac{\\partial x}{\\partial q}\)</span>求得速度<span class="math">\(\\dot{x}\)</span>的最终结果，体现了雅可比矩阵在机器人学中求解速度问题的应用。" src="https://feishu.cn/file/AHRMbdiJNoS9XyxJOXec0DQbnCe" /></p>
 <h2 id="34">34.奇异点</h2>
 <p>奇异点不是“到不了的点”（那是工作空间边界），而是雅可比矩阵降秩的位形，比如腿完全伸直或完全折叠：位置能到达，但在该方向上速度映射失效、关节速度会趋于无穷。而 40cm 手臂够不到 50cm 属于工作空间边界，具体自己查</p>
 <h1 id="40">40.步态和落脚点规划</h1>
@@ -212,7 +222,8 @@ cmd.tau  = 0.0
 <li><span class="math">\(w_z\)</span>: 绕z轴旋转的角速度</li>
 </ul>
 <blockquote>
-<p>💡  下面说一下注意事项：
+<p>💡 
+下面说一下注意事项：
 1. 在实际写代码过程中应注意各个参数的坐标系，如果是世界系最好都是世界系
 2. 要注意<span class="math">\(p_{hip}\)</span>虽然是xy平面的点，但他也是三维的向量是Vector3d，只是z方向分量为0
 3. 上面公式带入可以直接用，不过我推荐最好先只加入直行，转动等可以稳定直行之后再加入，否则会有很多问题混在一起排查不出来</p>
@@ -225,7 +236,7 @@ cmd.tau  = 0.0
 <h2 id="52">52.空间状态模型</h2>
 <p>就记住一句话就行，系统的下一阶段的变换与系统当前的状态和系统当前的输入有关（系统是线性的）</p>
 <p>再给我记住一个公式：</p>
-<p><img alt="图片展示了两个数学公式。上方公式为状态方程，表示系统状态x随时间的变化率为Ax与Bu的线性组合；下方公式为输出方程，表示系统输出y为Cx与Du的线性组合。这些公式是空间状态模型的基础，与上文提到的系统下一阶段变换与当前状态、输入有关的内容相呼应，是后续学习机器狗算法中空间状态模型的数学表达。" src="assets/SNiCbypFdoSGTJxCscmcu8UtnNg.png" /></p>
+<p><img alt="图片展示了两个数学公式。上方公式为状态方程，表示系统状态x随时间的变化率为Ax与Bu的线性组合；下方公式为输出方程，表示系统输出y为Cx与Du的线性组合。这些公式是空间状态模型的基础，与上文提到的系统下一阶段变换与当前状态、输入有关的内容相呼应，是后续学习机器狗算法中空间状态模型的数学表达。" src="https://feishu.cn/file/SNiCbypFdoSGTJxCscmcu8UtnNg" /></p>
 <p>具体的空间状态模型很复杂，主编能力有限不多讲解，在此基础上，加入dt将其变为离散状态空间模型</p>
 <h2 id="53">53.概率论</h2>
 <p>得到机器狗的实际状态实在是太难，行业内用了太多东西想要求出这些，IMU雷达相机激光等等，原因就是硬件的精度以及各种的偏差加起来，噪声让人难绷</p>
@@ -268,8 +279,10 @@ cmd.tau  = 0.0
 <h2 id="65">65.一句话总结</h2>
 <p>刚体运动学 = 每条腿的运动学 + 机身一个 6 维位姿。难的不是公式，是<strong><em>坐标系约定</em></strong>：谁相对谁、乘法顺序不能反、旋转不能交换</p>
 <blockquote>
-<p>💡  写代码前先画一张坐标系图（世界系/机身系/髋系/足端系），把每个 T 的下标方向标清楚，能省掉一大半“方向反了”的 bug</p>
-<p>🥇  以上也是机械臂应该必会的知识点，如果你做完一个机械臂发现有的还不会，那你应该多注意一下</p>
+<p>💡 
+写代码前先画一张坐标系图（世界系/机身系/髋系/足端系），把每个 T 的下标方向标清楚，能省掉一大半“方向反了”的 bug</p>
+<p>🥇 
+以上也是机械臂应该必会的知识点，如果你做完一个机械臂发现有的还不会，那你应该多注意一下</p>
 </blockquote>
 <h1 id="70">70.平衡器</h1>
 <h2 id="71vmc">71.VMC</h2>
@@ -290,6 +303,43 @@ cmd.tau  = 0.0
 <p>在此基础上对其进行变式还可以使速度贴近一个值等等，这里不多说式子的推导</p>
 <h2 id="83">83.凸优化和非凸优化</h2>
 <p>这里默认是凸二次规划，实际上底层的二次规划计算不用看，其实我们之前都学过，对于一个二次函数，其二阶导是大于等于0，则为凸函数，其会有最低点，将上述表达式求出最低点，即可求出最小<strong><em>代价函数</em></strong>，即x是最优解</p>
+<h1 id="85">85.离散化</h1>
+<h2 id="851">851.连续与离散</h2>
+<p>通过动力学和基本的物理法则获取而获取的状态空间方程就是<strong>连续的状态空间方程</strong>，一般格式如下</p>
+<div class="math-display">\[\dot{x}(t) = Ax(t) + Bu(t)\]</div>
+<p>而在平常使用PID或者LQR不会使用连续的空间方程，而是会使用离散型的空间方程，格式如下</p>
+<div class="math-display">\[x_{k+1} = Ax_k + Bu_k\]</div>
+<p>那么怎么将连续型变成离散型就是接下来的重点，下面主要有三种方法</p>
+<h2 id="852">852.离散化的三种方法</h2>
+<h3 id="853">853.第一种 前向/后向差分法</h3>
+<p>我们知道<span class="math">\(\frac{dp}{dt}\)</span>表示位置 p随时间 t变化的速度。</p>
+<p>那么假如在时刻<span class="math">\(t_k\)</span>和<span class="math">\(t_{k+1}\)</span>时刻的位置为<span class="math">\(p_k\)</span>和<span class="math">\(p_{k+1}\)</span>,</p>
+<p>那么可得</p>
+<div class="math-display">\[\Delta p = p_{k+1} - p_k\]</div>
+<p>同理</p>
+<div class="math-display">\[\Delta t = t_{k+1} - t_k\]</div>
+<p>当<span class="math">\(\Delta t\)</span>足够小的时候</p>
+<div class="math-display">\[\dot{p}=\frac{\Delta p}{\Delta t}\]</div>
+<p>这个就是基本的前向差分，后向差分就是把k+1和k变成了k和k-1</p>
+<h3 id="854-zoh">854.第二种 零阶保持器法（ZOH）</h3>
+<div class="math-display">\[\dot{x}(t) = Ax(t) + Bu(t)\]</div>
+<p>T是采样时间，比如0.001s</p>
+<p>这个方法的核心思想是：u在KT和（K+1）T内保持不变，而x是会发生变化的也就是</p>
+<div class="math-display">\[u(t)=u_k,kT \le t &lt; (k+1)T\]</div>
+<p>因为我们知道当前的状态x(t)，所以通过积分计算就可以获得x(t+1)，最后可得公式为</p>
+<div class="math-display">\[\boxed{x_{k+1}=e^{A_cT}x_k+\left(\int_0^T e^{A_c\tau}B_c\,d\tau\right)u_k}\]</div>
+<h3 id="855-tustin">855.第三种 双线性变化法（Tustin 变换法）</h3>
+<div class="math-display">\[\dot{x}(t) = Ax(t) + Bu(t)\]</div>
+<p>双线性采用的是梯形积分，也就是对上面这个公式采用梯形积分</p>
+<p>大致计算如下：</p>
+<div class="math-display">\[\dot{x}_k=A_cx_k+B_cu_k\]</div>
+<div class="math-display">\[\dot{x}_{k+1}=A_cx_{k+1}+B_cu_{k+1}\]</div>
+<div class="math-display">\[x_{k+1}-x_k=\frac{T}{2}\left(\dot{x}_k+\dot{x}_{k+1}\right)\]</div>
+<p>最后计算结果如下：</p>
+<div class="math-display">\[x_{k+1} = A_dx_k + B_d(u_k+u_{k+1})\]</div>
+<div class="math-display">\[A_d=\left(I-\frac{T}{2}A_c\right)^{-1}\left(I+\frac{T}{2}A_c\right)\]</div>
+<div class="math-display">\[B_d= \left(I-\frac{T}{2}A_c\right)^{-1} \frac{T}{2}B_c\]</div>
+<p>目前来说掌握这三种离散方法就已经够用了，不同的动力学和不同的模型应该采用不用的离散化方法，自己灵活应变吧</p>
 <h1 id="90lqr">90.LQR线性二次调节器</h1>
 <h2 id="91lqr">91.为什么需要LQR</h2>
 <p>PID是一种基于简单PD项反馈的系统，很多时候PID有奇效，但是大部分的项目都没有办法靠PID解决，实际上能解决的也就是电赛那种了</p>
@@ -352,7 +402,7 @@ cmd.tau  = 0.0
 <p>看着挺复杂，实际上就是将状态是否跟踪预定轨迹和控制是否跟踪希望的控制的两个代价，在此基础上我们再加上控制惩罚，不让控制变化率太高防止抽风 <span class="math">\(Δuk=uk−uk−1\)</span>：</p>
 <div class="math-display">\[J = \sum_{i=1}^{N_p} \| \mathbf{x}_{k+i} - \mathbf{x}_{k+i}^{\text{ref}} \|_{\mathbf{Q}}^2 + \sum_{i=0}^{N_c-1} \| \mathbf{u}_{k+i} - \mathbf{u}_{k+i}^{\text{ref}} \|_{\mathbf{R}}^2 + \sum_{i=0}^{N_c-1} \| \Delta \mathbf{u}_{k+i} \|_{\mathbf{S}}^2\]</div>
 <h2 id="105">105.代价函数计算</h2>
-<p><img alt="图片展示了MPC（模型预测控制）的预测过程相关内容。假设当前时刻为k，已知当前状态x_k，未来预测N_p步。首先给出第一个预测状态公式x_{k+1} = Ax_k + Bu_k，再给出第二个预测状态公式x_{k+2} = Ax_{k+1} + Bu_{k+1}，接着将第二个状态代入第一个状态，得到x_{k+2} = A^2x_k + ABu_k + Bu_{k+1}，最后继续展开，得到x_{k+i} = A^ix_k + ∑(j=0到i-1)A^(i-1-j)Bu_{k+j}的公式。这些公式与上下文紧密相关，是对MPC预测过程的数学推导说明。" src="assets/MGLBbtINwogHIixJ9MkcCKPVnqd.png" /></p>
+<p><img alt="图片展示了MPC（模型预测控制）的预测过程相关内容。假设当前时刻为k，已知当前状态x_k，未来预测N_p步。首先给出第一个预测状态公式x_{k+1} = Ax_k + Bu_k，再给出第二个预测状态公式x_{k+2} = Ax_{k+1} + Bu_{k+1}，接着将第二个状态代入第一个状态，得到x_{k+2} = A^2x_k + ABu_k + Bu_{k+1}，最后继续展开，得到x_{k+i} = A^ix_k + ∑(j=0到i-1)A^(i-1-j)Bu_{k+j}的公式。这些公式与上下文紧密相关，是对MPC预测过程的数学推导说明。" src="https://feishu.cn/file/MGLBbtINwogHIixJ9MkcCKPVnqd" /></p>
 <p>你会发现我只要知道当前的状态，然后我就可以写出未来所有的状态！</p>
 <p>而且最关键的是未来的状态只和第一步的x0还有未来的控制序列有关\~</p>
 <div class="math-display">\[\mathbf{X}=\begin{bmatrix}\mathbf{x}_1\\\mathbf{x}_2\\\vdots\\\mathbf{x}_N\end{bmatrix}=\begin{bmatrix}\mathbf{A}_d\mathbf{x}_0+\mathbf{B}_d\mathbf{u}_0+\mathbf{g}_d\\\mathbf{A}_d^2\mathbf{x}_0+\mathbf{A}_d\mathbf{B}_d\mathbf{u}_0+\mathbf{B}_d\mathbf{u}_1+\left(\mathbf{A}_d+\mathbf{I}\right)\mathbf{g}_d\\\vdots\\\mathbf{A}_d^N\mathbf{x}_0+\mathbf{A}_d^{N-1}\mathbf{B}_d\mathbf{u}_0+\mathbf{A}_d^{N-2}\mathbf{B}_d\mathbf{u}_1+\cdots+\mathbf{B}_d\mathbf{u}_{N-1}+\sum_{j=0}^{N-1}\mathbf{A}_d^j\mathbf{g}_d\end{bmatrix}\]</div>
@@ -388,7 +438,7 @@ cmd.tau  = 0.0
 <p>一个Ax = b ，可以通过变化得到二次型</p>
 <div class="math-display">\[\|Ax-b\|^2 = x^T A^T A x - 2b^T A x + b^T b\]</div>
 <p>计算如下</p>
-<p><img alt="图片展示了从Ax=b出发，推导出x^TA^TAx - 2b^TAx + b^Tb = 0的推导过程。首先从Ax=b两边作平方范数得到(Ax - b)^T(Ax - b) = 0，展开后得到x^TA^TAx - x^TA^Tb - b^TAx + b^Tb = 0。再由x^TA^Tb = b^TAx，可得x^TA^TAx - 2b^TAx + b^Tb = 0。该图片是对上文“一个Ax=b，可以通过变化得到二次型”内容的数学推导展示，是后续计算和公式推导的基础。" src="assets/IoovbNdSgoH0HnxfKGhcVi8inOe.png" /></p>
+<p><img alt="图片展示了从Ax=b出发，推导出x^TA^TAx - 2b^TAx + b^Tb = 0的推导过程。首先从Ax=b两边作平方范数得到(Ax - b)^T(Ax - b) = 0，展开后得到x^TA^TAx - x^TA^Tb - b^TAx + b^Tb = 0。再由x^TA^Tb = b^TAx，可得x^TA^TAx - 2b^TAx + b^Tb = 0。该图片是对上文“一个Ax=b，可以通过变化得到二次型”内容的数学推导展示，是后续计算和公式推导的基础。" src="https://feishu.cn/file/IoovbNdSgoH0HnxfKGhcVi8inOe" /></p>
 <p>假如你要写一个小车到达目标位置和目标速度的QP，可以将决策变量 <span class="math">\(x＝（p,v）\)</span></p>
 <p>目标函数如下：</p>
 <div class="math-display">\[min(||Q(p_{act} - p_{ref})||^2 + ||P(v_{act} - v_{ref})||^2)\]</div>
@@ -424,7 +474,7 @@ cmd.tau  = 0.0
 <li>mpc和wbc在书写中有一个变量是接触情况contact_state,当你使用仿真中的实际接触情况的话你会发现他一定是四足全支撑状态，四条腿都是有力的且大小均匀。如果你要摆动的话就需要切换到你步态规划的接触情况，而接触情况不是必须要摆动的0.5T完毕后才可以落地，当遇到特殊情况，比如踩到石头了或者前面的路崎岖，那么你的实际触地情况是不同的，这个要注意。而怎么规划落地和怎么判断是不是真的接触到了，这个在之后会提及</li>
 <li>mpc+wbc的链路并不会输出摆动相的力，也不会让你的摆动腿动，甚至加的约束都是让摆动腿力为0，那为什么wbc还要加入期望摆动腿加速度并跟踪呢。第一点，你输入的摆动足端加速度是通过足端落脚点规划通过贝塞尔的二次微分来输入的轨迹加速度也就是前馈，并加入pd控制得到的参考加速度<span class="math">\(a_{ref} = a_{ff} + K_p * e_p + K_d * e_v\)</span>这个把足端看为一个质点，没有质量，而实际肯定是有质量的，进入wbc通过动力学公式计算实际足端的加速度第二点，加速度的生成可以使用贝塞尔，但是z方向最少得是四阶贝塞尔，否则加速度起末点不为0,容易有强振动，而x方向的加速度可以使用三阶贝塞尔，因为平地上在x方向有足够的空间，不会碰到障碍物。而具体情况具体分析，之后如果遇到问题，x加速度的下图为x三阶，四阶贝塞尔的x-t / z-t曲线</li>
 </ol>
-<p><img alt="图片展示了机器狗行走时的运动学参数随时间变化的曲线。包含X、Z方向的位置、速度、加速度曲线，每种运动学参数又分为位置、速度、加速度三部分。位置曲线呈现上升趋势，速度曲线有正负波动，加速度曲线有正负变化。图中还标注了“Segment joint”（段关节）位置，对应Z方向速度曲线的峰值处。该图与上下文介绍的机器狗行走运动学参数相关，直观呈现了参数随时间的变化情况。" src="assets/AHKhbsE93opQbHxvOOtckjHInug.png" /></p>
+<p><img alt="图片展示了机器狗行走时的运动学参数随时间变化的曲线。包含X、Z方向的位置、速度、加速度曲线，每种运动学参数又分为位置、速度、加速度三部分。位置曲线呈现上升趋势，速度曲线有正负波动，加速度曲线有正负变化。图中还标注了“Segment joint”（段关节）位置，对应Z方向速度曲线的峰值处。该图与上下文介绍的机器狗行走运动学参数相关，直观呈现了参数随时间的变化情况。" src="https://feishu.cn/file/AHKhbsE93opQbHxvOOtckjHInug" /></p>
 <ol>
 <li>wbc并不是只可以搭配mpc,可以rl+wbc的链路，mpc/rl作为上层决策，决定姿态怎么变，落脚点去哪</li>
 <li>姿态误差不是把当前世界系的期望欧拉角-实际欧拉角，是使用指数坐标来计算两个姿态直接的误差</li>
@@ -438,7 +488,7 @@ _solver.data()-&gt;setNumberOfConstraints(n_con);</code></p>
 <ol>
 <li>存在sim2real gap</li>
 </ol>
-<p><img alt="图片展示了Sim-to-Real gap（仿真与真实差异）相关内容。表格对比了仿真中和真实中在动力学、执行器、感知、环境等方面的差异，如仿真中动力学为理想化接触模型，真实中为复杂的真实接触；仿真中执行器为理想PD控制，真实中为电机延迟等。还说明了本质洞察，即Sim-to-Real gap是一个可以尝试“把仿真做得更真实”来完全消除的问题，但无法完美实现真实世界的所有细节。该图与上下文紧密相关，是对Sim-to-Real gap概念的详细阐述。" src="assets/PJDEbIX5QoIuylxLdMYcv1oGnwb.png" /></p>
+<p><img alt="图片展示了Sim-to-Real gap（仿真与真实差异）相关内容。表格对比了仿真中和真实中在动力学、执行器、感知、环境等方面的差异，如仿真中动力学为理想化接触模型，真实中为复杂的真实接触；仿真中执行器为理想PD控制，真实中为电机延迟等。还说明了本质洞察，即Sim-to-Real gap是一个可以尝试“把仿真做得更真实”来完全消除的问题，但无法完美实现真实世界的所有细节。该图与上下文紧密相关，是对Sim-to-Real gap概念的详细阐述。" src="https://feishu.cn/file/PJDEbIX5QoIuylxLdMYcv1oGnwb" /></p>
   </article>
 </main>
 <footer class="foot">山西农大 GOW 战队 · 知识文档</footer>
