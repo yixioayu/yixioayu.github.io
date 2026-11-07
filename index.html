@@ -12,10 +12,16 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Bli
 a{color:var(--accent);text-decoration:none}
 .wrap{max-width:960px;margin:0 auto;padding:64px 24px 80px}
 h1{font-size:34px;margin:0 0 10px;letter-spacing:1px}
-.sub{color:var(--muted);margin:0 0 40px;font-size:15px}
+.sub{color:var(--muted);margin:0 0 48px;font-size:15px}
+.grp{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:700;margin:0 0 16px;color:var(--fg)}
+.grp span.bar{width:4px;height:18px;border-radius:2px;background:var(--accent)}
+.grp span.line{flex:1;height:1px;background:var(--line)}
+section.group{margin-bottom:40px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
 .card{display:flex;flex-direction:column;gap:6px;padding:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:var(--fg);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
 .card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.06);text-decoration:none}
+.card.off{opacity:.55;cursor:default}
+.card.off:hover{transform:none;border-color:var(--line);box-shadow:none}
 .ico{font-size:26px}
 .t{font-size:18px;font-weight:700}
 .d{font-size:14px;color:var(--muted);flex:1}
@@ -27,7 +33,10 @@ h1{font-size:34px;margin:0 0 10px;letter-spacing:1px}
 <main class="wrap">
   <h1>GOW 战队知识库</h1>
   <p class="sub">山西农大 GOW 战队开源项目 · 学习文档与算法笔记</p>
-  <div class="grid">
+
+  <section class="group">
+    <h2 class="grp"><span class="bar"></span>嵌入式基础<span class="line"></span></h2>
+    <div class="grid">
       <a class="card" href="docs/cpp.html">
         <span class="ico">🐍</span>
         <span class="t">C++重点</span>
@@ -40,6 +49,29 @@ h1{font-size:34px;margin:0 0 10px;letter-spacing:1px}
         <span class="d">快速上手 Linux 的常见工具与排查思路</span>
         <span class="go">阅读 →</span>
       </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="grp"><span class="bar"></span>视觉<span class="line"></span></h2>
+    <div class="grid">
+      <a class="card" href="docs/yolo.html">
+        <span class="ico">👁️</span>
+        <span class="t">YOLO入门指南</span>
+        <span class="d">从环境配置、数据标注到训练、推理与导出的完整流程</span>
+        <span class="go">阅读 →</span>
+      </a>
+      <div class="card off">
+        <span class="ico">📷</span>
+        <span class="t">OpenCV</span>
+        <span class="d">敬请期待</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="grp"><span class="bar"></span>运控<span class="line"></span></h2>
+    <div class="grid">
       <a class="card" href="docs/dog.html">
         <span class="ico">🐕</span>
         <span class="t">机器狗算法扫盲</span>
@@ -52,7 +84,19 @@ h1{font-size:34px;margin:0 0 10px;letter-spacing:1px}
         <span class="d">从零开始的强化学习数学基础</span>
         <span class="go">阅读 →</span>
       </a>
-  </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="grp"><span class="bar"></span>硬件<span class="line"></span></h2>
+    <div class="grid">
+      <div class="card off">
+        <span class="ico">🔧</span>
+        <span class="t">硬件</span>
+        <span class="d">敬请期待</span>
+      </div>
+    </div>
+  </section>
 </main>
 <footer class="foot">山西农大 GOW 战队 · 开源知识文档</footer>
 </body>

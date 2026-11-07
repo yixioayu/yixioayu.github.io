@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>强化学习数学基础 · GOW 战队</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']});"></script>
+<style>
+:root{--bg:#fff;--fg:#1d2129;--muted:#6b7280;--line:#e5e7eb;--card:#f7f8fa;--accent:#2f6fed}
+@media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e6e8eb;--muted:#9aa2ad;--line:#2a2e36;--card:#1e2229;--accent:#6a9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.75;font-size:16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:var(--bg);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.brand{font-weight:700;color:var(--fg);letter-spacing:.5px}
+.back{font-size:14px;color:var(--muted)}
+.wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px}
+.doc h1{font-size:28px;margin:8px 0 24px;line-height:1.35}
+.doc h2{font-size:22px;margin:40px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc h3{font-size:18px;margin:28px 0 10px}
+.doc p{margin:14px 0}
+.doc img{max-width:100%;height:auto;border-radius:8px;display:block;margin:18px auto;border:1px solid var(--line)}
+.doc blockquote{margin:18px 0;padding:12px 16px;background:var(--card);border-left:3px solid var(--accent);border-radius:6px;color:var(--fg)}
+.doc blockquote p{margin:6px 0}
+.doc code{background:var(--card);padding:2px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.doc pre{background:var(--card);padding:16px;border-radius:8px;overflow:auto;border:1px solid var(--line)}
+.doc pre code{background:none;padding:0;font-size:.9em}
+.doc table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+.doc th{background:var(--card);font-weight:600;white-space:nowrap}
+.doc ul,.doc ol{padding-left:24px}
+.doc li{margin:6px 0}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:0 0 28px;font-size:14px}
+.toc ul{margin:0;padding-left:18px}
+.toc>ul{padding-left:0;list-style:none}
+.toc li{margin:4px 0}
+.math-display{overflow-x:auto;overflow-y:hidden;margin:20px 0;text-align:center}
+.katex{font-size:1.05em}
+.foot{text-align:center;color:var(--muted);font-size:13px;padding:28px 16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../index.html">GOW 战队</a>
+  <a class="back" href="../index.html">← 返回主页</a>
+</header>
+<main class="wrap">
+  <article class="doc">
+    <h1 id="yolo">YOLO入门指南</h1>
+<div class="toc">
+<ul>
+<li><a href="#cuda-gpu">配置显卡驱动、CUDA （配置前提是你的电脑的英伟达的显卡，非英伟达或无GPU跳过）</a></li>
+<li><a href="#anaconda">安装 Anaconda 与创建虚拟环境</a><ul>
+<li><a href="#vscodepycharm">创建虚拟环境（这里以VSCODE为演示编译器，pycharm一样的）</a></li>
+</ul>
+</li>
+<li><a href="#gpu-pytorchgpu">安装 GPU 版本的 PyTorch(如果没有GPU可以跳过）</a></li>
+<li><a href="#yolo-ultralytics">安装 YOLO 框架 (Ultralytics)</a></li>
+<li><a href="#_3">数据准备与标注（最耗时的一步，这个标注的质量决定了你以后训出模型的质量）</a></li>
+<li><a href="#_4">构建标准数据集目录与配置文件（从这里才真正开始训练模型）</a></li>
+<li><a href="#_5">启动模型训练</a><ul>
+<li><a href="#_6">常见报错处理：</a></li>
+</ul>
+</li>
+<li><a href="#_7">评估训练结果、推理与导出</a></li>
+</ul>
+</div>
+<h1 id="_1">简介</h1>
+<p><strong>YOLO（You Only Look Once）</strong> 是计算机视觉领域最具里程碑意义的单阶段（One-Stage）实时目标检测算法家族。由 Joseph Redmon 等人于 2015 年首次提出，其核心颠覆性在于：<strong>将目标检测任务重构为单一的端到端回归问题</strong>，仅需对输入图像进行一次前向传播（Forward Pass），即可同时预测出图像中所有目标的边界坐标及其所属类别概率。</p>
+<p>这个东西的功能说点能听懂的，就是先训出一个对照组，然后去到一个陌生的地方按图索骥，就像是教一个小朋友去买菜，给他一根菜叶一样。</p>
+<h1 id="_2">配置环境</h1>
+<h2 id="cuda-gpu">配置显卡驱动、CUDA （配置前提是你的电脑的英伟达的显卡，非英伟达或无GPU跳过）</h2>
+<ol>
+<li>按 <code>Win + R</code> 输入 <code>cmd</code> 打开终端</li>
+<li>输入以下命令查看显卡状态：nvidia-smi</li>
+<li>查看输出结果右上角的 <strong><code>CUDA Version: 12.x</code>这代表你当前显卡驱动最高支持的 CUDA 版本（如果命令报错，请先去</strong> <a href="https://www.nvidia.com/Download/index.aspx"><strong>NVIDIA 官网</strong></a> <strong>下载并安装最新显卡驱动）。就像下图</strong></li>
+</ol>
+<p><img alt="图片展示了在Windows系统下使用nvidia-smi命令查看显卡状态的输出结果。其中，右上角以红色箭头突出显示的“CUDA Version: 13.1”是关键信息，表明当前显卡驱动最高支持的CUDA版本为13.1。该图片与文档中“配置显卡驱动、CUDA”部分内容相关，用于说明查看显卡状态时如何确认CUDA版本，以确保配置环境时显卡驱动版本满足要求。" src="assets/yolo-01.png" /></p>
+<h2 id="anaconda">安装 Anaconda 与创建虚拟环境</h2>
+<p>为了防止不同项目的 Python 库版本冲突，必须使用虚拟环境。（安装conda进行环境管理很重要，因为我们后期会做很多项目，每个项目对于python的版本和包的要求并不一样，全放在一起会发生冲突，其实我大一的时候也不理解，只觉得这个很麻烦，明明下个python在pip几个包就能跑了为什么要配这个？结果就是在我下opencv的时候发生了包冲突，导致我删了所有的东西重新配置）</p>
+<ol>
+<li>安装 Miniconda 或 Anaconda</li>
+<li>前往 <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda 官网</a> 下载安装包（实际上，我们使用miniconda就可以了，我当时下的conda现在已经11G了，很吃内存，以后学linux也会在里面下miniconda）参照下图</li>
+</ol>
+<p><img alt="图片展示了Anaconda官网页面，页面左侧有导航栏，其中“About Anaconda”和“Installation”选项被红色箭头突出显示。页面中部介绍了Anaconda，强调其帮助数据科学家、工程师和研究人员快速从想法到结果。下方“Anaconda installers”部分说明Anaconda提供两种安装器，均包含conda和对Anaconda包库的完全访问。该图片与文档中配置环境部分内容相关，直观呈现了Anaconda官网中与安装相关的页面位置。" src="assets/yolo-02.png" /></p>
+<p><img alt="图片展示的是Anaconda官网的安装页面。页面上方有“About Anaconda”“Installation”“Getting started guides”“Working with conda”等导航栏。中间部分有“Find your install guide”“Anaconda Distribution”“System requirements”等选项。下方“Step 2: Select distribution installer”处，有“Anaconda Distribution”和“Miniconda”两个选项，后者被蓝色边框突出显示。再往下是“Step 3: Select installer file type”，有“Graphical installer”和“CLI installer”两个选项，后者也被蓝色边框突出显示。该图片用于指导用户在Anaconda官网下载安装包时的选择步骤。" src="assets/yolo-03.png" /></p>
+<p>或者更轮椅一点，直接在浏览器输入就能下载</p>
+<pre><code class="language-text">https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
+</code></pre>
+<p>由于我已经下过了，具体安装就不展示了，总之一路next就行。</p>
+<p>其实除了conda系列还有其他的环境管理程序，例如uv，venv等，有兴趣可以了解.</p>
+<h3 id="vscodepycharm">创建虚拟环境（这里以VSCODE为演示编译器，pycharm一样的）</h3>
+<ol>
+<li>打开终端</li>
+</ol>
+<pre><code class="language-text"># 创建一个名为 yolo_env，Python 版本为 3.10 的环境 （这里的名字和py版本根据需求修改）
+如果要训练yolo的话python版本就推荐用3.10较稳定
+conda create -n yolo_env python=3.10 -y
+</code></pre>
+<pre><code class="language-text"># 激活进入该环境（每次重新打开终端都需要执行这句） 
+conda activate yolo_env
+正确进入应该是在文件路径前有（yolo_env）
+</code></pre>
+<h2 id="gpu-pytorchgpu">安装 GPU 版本的 PyTorch(如果没有GPU可以跳过）</h2>
+<ol>
+<li>打开 <a href="https://pytorch.org/get-started/locally/">PyTorch 官网</a>，根据你刚才安装的 CUDA 版本选择安装命令（由于这个版本是向下兼容的所以选择稳定版就行，就是比你的CUDA对应版本小的）。</li>
+<li>检查pip的下载<br />
+在你刚才打开的虚拟环境中</li>
+</ol>
+<pre><code class="language-text">pip --version
+</code></pre>
+<pre><code> 如果没有就执行
+</code></pre>
+<pre><code class="language-text">conda install pip -y
+</code></pre>
+<ol>
+<li>（可换可不换）关于换源的问题，首先为什么要换源？当你在pip下载包的时候你会发现速度奇慢无比，有时还会下载失败，除去电脑真有问题的极大原因就是下载源的问题，因为很多包是外国网站的，为了解决这个问题，就要换源，但是在windous系统换源并不如linux方便，所以新手可以先不用换，等有能力再换。现在常用的国内镜像源是清华源和中科大源，由于今年清华源砍掉了conda的镜像所以我们换中科大源。</li>
+</ol>
+<p>pip换源：</p>
+<pre><code class="language-text">pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
+</code></pre>
+<p><em>验证方式</em>：输入 <code>pip config list</code>，看到输出为中科大地址即说明成功。</p>
+<p>conda换源：</p>
+<pre><code class="language-text">conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/
+conda config --set show_channel_urls yes
+</code></pre>
+<ol>
+<li>验证：确认 PyTorch 能否调用 GPU</li>
+</ol>
+<p>在当前虚拟环境中，输入以下命令测试：</p>
+<pre><code class="language-text">python -c &quot;import torch; print('PyTorch版本:', torch.__version__); print('CUDA是否可用:', torch.cuda.is_available()); print('当前显卡名称:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else '无')&quot;
+</code></pre>
+<p><strong>必须确保 <code>CUDA是否可用</code> 输出为 <code>True</code></strong>。如果是 <code>False</code>，说明装成了 CPU 版 PyTorch 或驱动不匹配，需卸载重装。</p>
+<h1 id="yolo_1">初识YOLO</h1>
+<h2 id="yolo-ultralytics">安装 YOLO 框架 (Ultralytics)</h2>
+<p>现在的YOLO已经成为了最主流的视觉识别方案，Ultralytics团队很活跃，更新很频繁，现在已经出到了YOLOv27，挺厉害的，但是我们做端到端部署和工业使用的并不追求先进而是稳定，现在应用最广的模型是yolov5，8，11</p>
+<p>其中每个大版本又有细分，需要按照自己的要求选择，有v8s,n,m,l,x,其中n最常用是一个用于开发板的均衡版本，当需要识别的物品较小时可换成s（相应的算力要求高，相对的）。</p>
+<p>目前 YOLOv8 和 YOLOv11 都集成在官方的 <code>ultralytics</code> 库中，安装极其方便，无需像早期版本那样手动克隆源码和安装冗长的 <code>requirements.txt</code>。</p>
+<pre><code class="language-text">pip install ultralytics -i https://mirrors.ustc.edu.cn/pypi/web/simple
+</code></pre>
+<p><strong>测试环境是否通畅</strong>： 运行一句官方自带的推理命令（会自动下载一个微型的预训练权重并检测一张示例图片）：</p>
+<pre><code class="language-text"> yolo predict model=yolov8n.pt source='https://ultralytics.com/images/bus.jpg'
+</code></pre>
+<p><img alt="这是YOLO框架运行后输出的检测结果图，图中为一处城市街景，包含蓝色公交、行人等元素。画面中用不同颜色的框标识出了检测到的目标，蓝色框标注的“person”目标有多个，对应数值为0.87、0.83、0.85、0.26，代表该目标被判定为行人的置信度；粉色框标注了“bus”和“stop sign”目标，对应置信度分别为0.87和0.26。这张图对应YOLO入门指南中测试环境是否通畅的步骤，用来验证YOLO框架的图像推理功能是否正常运行，相当于编程中入门的“HELLO WORLD”验证环节。" src="assets/yolo-04.png" /></p>
+<p>这就是yolo最经典的图像，相当于c的“HELLO WORLD”顺利做到这里算是yolo入门了</p>
+<h2 id="_3">数据准备与标注（最耗时的一步，这个标注的质量决定了你以后训出模型的质量）</h2>
+<p>本来是想用labelimg的因为这个足够简单，几乎没有上手难度，但是在我使用的过程中发现经常有闪退的情况，所以就用我最常用而且非常好用，甚至说最好用的标注工具，就是上手难度极大，但是没关系，这里我将用大量的图片和文字带你解决他。</p>
+<p>首先在特殊环境下打开浏览器  </p>
+<pre><code class="language-text">https://roboflow.com/
+</code></pre>
+<p><img alt="这张图片展示的是Roboflow平台的网页界面，核心内容是页面右上角带有红色箭头指向的“Login”登录按钮，该界面是YOLO入门时数据准备与标注环节提及的登录操作页面，页面右上角还设有“BOOK A DEMO”和“GET STARTED”按钮，顶部有平台相关导航选项，背景画面为工业传送带上的金属制动盘，搭配“AI for the physical world”的宣传标语，符合YOLO标注环节需使用Roboflow工具的场景，对应文档中推荐的第一种带小猫图标的登录方式。" src="assets/yolo-05.png" /></p>
+<p>在这里登录推荐第一种登录方式（小猫图标）</p>
+<p>登录进去之后左边的project，然后右上角的NEW</p>
+<p><img alt="图片展示了Nexar平台的项目管理界面。左侧导航栏中“Projects”被红色箭头指向，表明操作重点在此。右侧界面显示多个项目缩略图，上方有搜索框和排序选项。右上角“New Project”按钮也被红色箭头突出显示。该图片与文档中“登录进去之后左边的project，然后右上角的NEW”内容对应，指导用户在登录Nexar平台后，如何在项目管理界面创建新项目。" src="assets/yolo-06.png" /></p>
+<p><img alt="图片展示的是在Roboflow平台创建项目时的界面。界面上方显示“Let’s create your project.”。左侧有“Project Name”输入框，提示可输入如“Dog Breeds”或“Car Models”等名称，当前名称被红色框突出显示。下方有“Project Type”选项，其中“Object Detection”被勾选，其下有“Bounding Boxes”“Count”“Tracking”三个子选项。右侧有“Visibility”“Licenses”“Annotation Group”等设置选项。该图片与文档中数据准备与标注流程相关，是创建项目时的界面展示。" src="assets/yolo-07.png" /></p>
+<p>创建好之后上传提前找好的图片（不会找照片？别急，往下看）</p>
+<p><img alt="图片展示的是Roboflow平台中“Upload Data”页面。页面上方显示数据上传时间及可添加标签。中部有“Drag and drop file(s) to upload, or:”的提示，下方有“Select Files”和“Select Folder”选项。下方列出支持的文件格式，包括Images、Annotations、Videos、PDFs等。右侧有“Upload data from your phone”二维码，以及“Search on Roboflow Universe”和“Integrate Cloud Storage”等操作选项。该图片与文档中数据准备与标注的内容相关，是数据上传操作的展示。" src="assets/yolo-08.png" /></p>
+<p>然后上传完图片后打开标注界面</p>
+<p><img alt="图片展示的是标注界面，用于对图片中目标物体进行标注。画面左侧有“Labels”“Attributes”“Comments”等选项，右侧是标注后的图片，图片中大量标注了黄色边框的红色矩形框，框内有“bug”字样，标注的是“bug”类目标。右侧还有“Find Objects with AI”按钮和“Tags”区域。右侧边缘有“Annotations”“Classes”“Layers”等标签，以及“+”“-”按钮。图片右侧边缘有红色箭头指向“Annotations”标签，与上下文提到的标注操作相呼应。" src="assets/yolo-09.png" /></p>
+<p>用这个箭头指的画框，要求是框要尽可能贴近标注物体，把图片中所有的目标物体全标上（要是嫌麻烦少标漏标的话后面的模型会环视很严重）</p>
+<p>标注完之后，进入到这里</p>
+<p><img alt="图片展示的是一个标注界面，左侧导航栏中“Upload Data”和“Versions”被红色箭头指向。界面中显示“Versions”下暂无版本创建，有“Train a Model”选项。下方“Create New Version”部分，有“Preprocessing”步骤，包括“Auto - Orient”和“Resize”选项，右侧有“Edit”按钮，其中“Resize”选项被红色箭头突出显示并标注“全打X”。该图片与文档中数据准备与标注的内容相关，指导用户在标注完图片后进入此界面，并对后续操作进行说明。" src="assets/yolo-10.png" /></p>
+<p>剩下的就一路continue</p>
+<p><img alt="这是YOLO相关数据标注工作完成后下载数据集的界面，属于数据准备步骤的收尾环节。界面右侧的红色箭头指向“Download Dataset”按钮，该按钮用于下载已完成的数据集，页面还显示了数据集的版本信息、创建时间，以及标注后未训练模型的相关提示，剩余操作按指引点击continue即可完成最终大功告成的步骤。" src="assets/yolo-11.png" /></p>
+<p>下载之后就大功告成了。挺简单的对吗？</p>
+<p>至于数据集怎么找？还是这个web</p>
+<p><img alt="图片展示了在Universe界面中选择“Projects”选项的操作。左侧为导航栏，箭头指向“Universe”选项。右侧是“N NJX”项目页面，显示了“Object Detection”等信息，下方有“DATA”板块，包含“Upload Data”“Annotate”“Dataset”等选项，以及“Versions”“Analytics”“Classes &amp; Tags”等板块。该图片与文档中数据准备与标注步骤相关，指导用户在Universe界面中选择“Projects”以进入标注界面。" src="assets/yolo-12.png" /></p>
+<p>点击后进入神秘空间，自行探索)。</p>
+<h2 id="_4">构建标准数据集目录与配置文件（从这里才真正开始训练模型）</h2>
+<ol>
+<li>整理文件夹结构<br />
+将你的图片和标注好的 .txt 文件按 <strong>8:2</strong>（或 7:2:1）的比例划分为<strong>训练集（train）和验证集（val）</strong>。严格按照以下目录结构摆放（图片和标签文件名必须一一对应）：（这个如果使用roboflow的话一般在导出前就能设置）大概长这样  </li>
+</ol>
+<p><img alt="这张图展示了YOLO训练所需的标准数据集目录结构，核心包含根目录my_dataset，其下分设images和labels两个子目录。images目录内又细分train子目录，用于存放80%的训练图片（格式为jpg或png），以及val子目录，用于存放20%的验证图片；labels目录同样细分train和val子目录，分别存放对应train、val图片的txt格式标签文件，各目录旁的注释清晰说明了其用途，契合构建标准数据集目录的要求。" src="assets/yolo-13.png" /></p>
+<ol>
+<li>编写数据集配置文件 (data.yaml)<br />
+在你的项目工作目录下新建一个名为 <code>my_data.yaml</code> 的文本文件，填入以下内容（注意冒号后面必须有一个空格）：（这个一般也会自带）</li>
+</ol>
+<pre><code class="language-text">建议使用绝对路径，防止找不到文件（路径斜杠用 / ）
+path: D:/yolo_project/my_dataset
+train: images/train
+val: images/val
+
+# 类别字典（严格对应你标注时 classes.txt 的顺序！）
+names:
+0: person
+1: helmet
+2: vest
+</code></pre>
+<p>下面以我的一个工程为例：</p>
+<p><img alt="这张图片展示的是YOLO项目中用于配置数据集的data.yaml文件内容，呈现了该配置文件的核心关键信息。文件内明确标注了训练集、验证集、测试集的对应路径，分别为./train/images、./valid/images、./test/images，还设置了类别数量nc: 1与类别名称names: \['leaf'\]。此外，该配置文件关联了Roboflow平台的相关信息，包括工作空间、项目名称、版本、许可协议及数据集的具体网址，可用于关联Roboflow导出的对应数据集。" src="assets/yolo-14.png" /></p>
+<h2 id="_5">启动模型训练</h2>
+<p>你可以通过命令行或编写 Python 脚本来启动训练。推荐使用 Python 脚本，方便调参和调试。</p>
+<p>新建一个 <code>train.py</code> 文件，写入以下代码：</p>
+<pre><code class="language-text">from ultralytics import YOLO 
+
+if __name__ == '__main__':
+    # 1. 加载预训练模型（会自动下载）
+    # 模型从小到大有：yolo8n.pt, yolo8s.pt, yolo8m.pt, yolo8l.pt, yolo8x.pt (也可换为 yolov11n.pt 等)
+    # 新手建议先用 n (nano) 或 s (small) 测试速度和效果（前文已涉及）
+    model = YOLO('yolov8n.pt')
+以下的参数其实还有很多种比如还能设置旋转和亮度，目的是在有限的数据集中增加不同情况，提高最终模型的鲁棒性
+    # 2. 开始训练
+    results = model.train(
+        data='my_data.yaml',   # 数据集配置文件的路径
+        epochs=100,            # 训练总轮数（通常设置 100~300，不是越大越好，过大会出现过拟合）
+        imgsz=640,             # 输入图像缩放尺寸（默认 640，小目标多可设为 1280）
+        batch=16,              # 每次塞给显卡的图片数量（根据显存大小调整：8G显存建议设 8 或 16）
+        device=0,              # 使用第 0 号 GPU（如果是 CPU 则写 'cpu'）
+        workers=4,             # 数据加载线程数（Windows下如果报错内存不足，改为 0 或 2）
+        project='runs/train',  # 训练结果保存的主目录
+        name='exp1',           # 本次训练任务的名称
+        patience=50            # 早停机制：如果 50 轮验证集指标没有提升，自动停止训练防过拟合
+    )
+</code></pre>
+<p>在终端运行脚本开始训练：（通常时间较长，GPU占用会满，发热，建议加散热设备）</p>
+<pre><code class="language-text">python train.py
+</code></pre>
+<h3 id="_6">常见报错处理：</h3>
+<ul>
+<li><code>CUDA out of memory</code>（显存溢出）：将代码中的 <code>batch=16</code> 调小为 <code>8</code> 或 <code>4</code>。</li>
+<li><code>Page file too small</code>（Windows 虚拟内存不足）：将代码中的 <code>workers=4</code> 改为 <code>workers=0</code> 或 <code>2</code>。</li>
+</ul>
+<h2 id="_7">评估训练结果、推理与导出</h2>
+<ol>
+<li>看懂训练结果（一般就只用看best.pt，这个就是最终的模型，至于下面的看过程曲线一般是熟悉后追求效果或者对比看的，没有找到图像？其实这些就是执行python train.py后在终端不断刷新的信息）</li>
+</ol>
+<p>进入 <code>runs/train/exp1/</code> 文件夹：</p>
+<ul>
+<li><strong><code>weights/best.pt</code></strong>：在验证集上表现<strong>最好</strong>的模型权重（后续部署和推理就用它）。</li>
+<li><strong><code>weights/last.pt</code></strong>：最后一轮的权重（用于意外中断后恢复训练 <code>resume=True</code>）。</li>
+<li>
+<p><strong><code>results.png</code></strong>：训练过程曲线图。重点看两项：</p>
+</li>
+<li>
+<p><code>box_loss</code> / <code>cls_loss</code>：损失曲线应该呈现平滑下降并趋于收敛的趋势。</p>
+</li>
+<li><code>metrics/mAP50(B)</code>：平均精度（取值 0\~1），<strong>越接近 1 代表模型越准</strong>（通常达到 0.85 以上在实际场景中就非常好用了）。</li>
+</ul>
+<ol>
+<li>用训练好的模型测试新图片/视频<br />
+新建一个 predict.py 脚本测试你的专属模型：代码写好后保存在 打开终端 打开虚拟环境 执行 python predict.py</li>
+</ol>
+<pre><code class="language-text">from ultralytics import YOLO
+
+# 加载你训练出的最优权重
+model = YOLO('runs/train/exp1/weights/best.pt')//不要照抄根据自己的目录
+# 对新图片、文件夹、视频甚至摄像头(source=0)进行推理保存结果
+model.predict(
+    source='test_images/',  # 可以是单张图路径、文件夹路径或视频路径 (.mp4)
+    save=True,              # 保存画框后的结果图
+    conf=0.5                # 置信度阈值（只显示大于 50% 把握的目标框）
+)
+
+</code></pre>
+<p>下面是我的示例<br />
+通常训练后的图片会在这里</p>
+<p><img alt="图片展示了使用ultralytics库进行目标检测的代码示例。代码中导入YOLO模型，加载训练出的最优权重，并对新图片进行预测保存结果。图片中红色箭头指向代码中的“source”参数，其值为“D:\\YOLO\\corn\\picture\\images1.jpg”，即指定要预测的图片路径。该图片与上文提到的用训练好的模型测试新图片/视频的内容相关，直观呈现了代码中关键参数的设置。" src="assets/yolo-15.png" /></p>
+<p><img alt="这张图片展示的是YOLO模型推理的实际效果，右侧是一张带土培幼苗的田间场景图，模型对幼苗的叶片进行了检测，有两个蓝色的检测框分别标注“leaf”类别，同时附带对应的置信度，数值分别为0.57和0.65。左侧是代码编辑界面，呈现了工程目录结构，其中包含执行推理相关的predict.py脚本，以及检测后生成的imaget1.jpg文件，该示例图片对应文档中模型测试新图片的效果展示，是完成YOLO训练后推理步骤的实际成果。" src="assets/yolo-16.png" /></p>
+<p>如果你最后用模型测试也能出来这样的图片，那么恭喜你，学会了训练YOLO的所有步骤，请开始你的视觉之路。</p>
+<h1 id="_8">未完待续（后续会更新到端部署，常见问题解答等）</h1>
+<ul>
+<li>模型导出部署（在linux上更好操作，所以建议学习linux，有点基础的可以看我的学长高卓远的<a href="linux.html">Linux扫盲</a>）<br />
+训出模型会不会有个疑问？在电脑上训出的模型我怎么实时使用呢？总不能一直截图识别单张吧？这就需要将模型转格式不是到终端设备上了<br />
+我们最常用的视觉到端设备是嘉立创庐山派k230，这也是可玩性很强，性能够用，极易上手的设备，他所需的的模型格式是best.pt-&gt;onnx-&gt;kmodel</li>
+</ul>
+<p>最后一语</p>
+<p>我是南极星，目前研究领域是计算机视觉，感知导航，后面我也会写出感知文档，文档如有问题可直接联系我或者发送到我的邮箱wanggankuo@163.com<br />
+中华人民共和国万岁！！！<br />
+感谢观看，共勉！</p>
+  </article>
+</main>
+<footer class="foot">山西农大 GOW 战队 · 知识文档</footer>
+</body>
+</html>
